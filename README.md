@@ -1,17 +1,25 @@
-# Undangan Yhola & Ardan — V4
+# Undangan Digital Yhola & Ardan — V2
 
-Versi V4 mempertahankan ilustrasi/background tetap diam. Label interaktif dibuat lebih hidup dengan:
-- teks label bergerak naik-turun secara lembut;
-- aura/sinar pink lembut di belakang teks;
-- sparkle kecil dengan timing berbeda;
-- efek hover/touch berupa sedikit pembesaran dan glow lebih kuat;
-- INFO dan MUSIC tetap menjadi tombol kontrol di kanan atas dan tidak ikut animasi dekoratif.
+## Perubahan V2
+- Area tombol utama sekarang memiliki animasi glow/pulse dan sparkle agar lebih terlihat bisa diklik.
+- Tombol INFO dan MUSIK dipindahkan ke pojok kanan atas.
+- File musik tetap bisa diganti nanti melalui `data/undangan.js` pada `music.file`.
 
-## Struktur editable
-- `data/undangan.js` — data acara, orang tua, rekening, RSVP, teks undangan, dan gallery.
-- `assets/background.png` — background asli.
-- `assets/background-layered.png` — background yang sudah dilapisi artwork label yang selaras dengan background untuk mencegah efek dobel.
-- `assets/text-*.png` — layer teks transparan yang dianimasikan.
-- `assets/music.mp3` — musik.
+## Edit musik nanti
+1. Masukkan file MP3 baru ke folder `assets/`.
+2. Buka `data/undangan.js`.
+3. Ubah `music.file`, contoh:
+   `file: 'assets/lagu-baru.mp3'`
 
-Untuk menambahkan foto gallery, masukkan file ke `assets/gallery/` lalu isi daftar `gallery.photos` di `data/undangan.js`.
+## Data yang bisa diedit
+Buka `data/undangan.js` untuk nama, acara, RSVP, Gift, About Us, Gallery, dan musik.
+
+## Gallery
+Tambahkan foto ke folder `assets/gallery/`, lalu isi array `gallery.photos` di `data/undangan.js`, contoh:
+`photos: ['assets/gallery/foto-1.jpg', 'assets/gallery/foto-2.jpg']`
+
+## Nama tamu otomatis
+Gunakan URL seperti:
+`index.html?to=Bapak%20Budi`
+
+Website dibuat mobile-first dan dapat di-host di GitHub Pages, Cloudflare Pages, atau Netlify.

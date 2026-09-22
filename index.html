@@ -10,33 +10,14 @@
 </head>
 <body>
   <main class="page" id="scene">
-    <img class="background" src="assets/background-layered.png" alt="Ilustrasi undangan Yhola dan Ardan">
+    <img class="background" src="assets/background.png" alt="Ilustrasi undangan Yhola dan Ardan">
 
-    <!-- The artwork is kept fixed. Only the label text gently floats. -->
-    <button class="floating-label label-gallery" data-modal="galleryModal" aria-label="Buka Gallery">
-      <span class="pink-aura"></span><span class="spark spark-a">✦</span><span class="spark spark-b">✧</span>
-      <img src="assets/text-gallery-button.png" alt="Gallery">
-    </button>
-
-    <button class="floating-label label-about" data-modal="aboutModal" aria-label="Buka About Us">
-      <span class="pink-aura"></span><span class="spark spark-a">✦</span><span class="spark spark-b">✧</span>
-      <img src="assets/text-about-us.png" alt="About Us">
-    </button>
-
-    <button class="floating-label label-rsvp" data-modal="rsvpModal" aria-label="Buka RSVP">
-      <span class="pink-aura"></span><span class="spark spark-a">✦</span><span class="spark spark-b">✧</span>
-      <span class="rsvp-text">RSVP</span>
-    </button>
-
-    <button class="floating-label label-date" data-modal="dateModal" aria-label="Buka Date & Venue">
-      <span class="pink-aura"></span><span class="spark spark-a">✦</span><span class="spark spark-b">✧</span>
-      <img src="assets/text-date-venue.png" alt="Date & Venue">
-    </button>
-
-    <button class="floating-label label-gift" data-modal="giftModal" aria-label="Buka Gift">
-      <span class="pink-aura"></span><span class="spark spark-a">✦</span><span class="spark spark-b">✧</span>
-      <img src="assets/text-gift.png" alt="Gift">
-    </button>
+    <!-- Invisible click zones follow the objects in BACKGROUND.png. -->
+    <button class="hotspot hotspot-gallery" data-modal="galleryModal" aria-label="Buka Gallery"></button>
+    <button class="hotspot hotspot-about" data-modal="aboutModal" aria-label="Buka About Us"></button>
+    <button class="hotspot hotspot-rsvp" data-modal="rsvpModal" aria-label="Buka RSVP"></button>
+    <button class="hotspot hotspot-date" data-modal="dateModal" aria-label="Buka Date & Venue"></button>
+    <button class="hotspot hotspot-gift" data-modal="giftModal" aria-label="Buka Gift"></button>
 
     <button class="music-toggle" id="musicToggle" aria-label="Matikan musik">
       <img id="musicIcon" src="assets/music.png" alt="Musik aktif">
