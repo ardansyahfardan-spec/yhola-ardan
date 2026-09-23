@@ -13,6 +13,8 @@ window.WEDDING = {
   brideParents: "Sugeng Hariyanto & Anik Rahayu",
   bri: "067101498677509",
   mandiri: "1400022970561",
+  bca: "6155469025",
+  accountHolder: "Syahfardan Al Hilal Havi",
   giftAddress: "Dsn. Ketok Ds. Tunggalpager RT.02 RW.05 Kec. Pungging Kab. Mojokerto 61384 (Pagar Kipas Hitam)",
   aboutUs: `Berawal dari sebuah pertemuan di tahun 2018, di kampus yang sama, tanpa pernah menyangka bahwa pertemuan sederhana itu akan membawa kami sampai sejauh ini.
 

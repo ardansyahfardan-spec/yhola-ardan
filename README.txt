@@ -30,3 +30,12 @@ Masukkan foto ke folder `gallery/`. Versi awal sudah menyediakan area gallery; t
 - Efek click sound dibuat dengan Web Audio sehingga tidak membutuhkan file SFX tambahan.
 - RSVP dan ucapan pada versi awal tersimpan di browser (localStorage), sehingga belum menjadi database online. Untuk RSVP/ucapan yang benar-benar terkumpul dari semua tamu, tahap berikutnya perlu backend/database.
 - Background asli tidak diubah; animasi kupu-kupu, kunang-kunang, sparkle, popup, dan hotspot ditambahkan sebagai layer.
+
+V5 revisions:
+- Love Story label/content updated to Cerita Kami.
+- YHOLA & ARDAN board is an invisible hotspot for couple data.
+- Info button remains Cara Menjelajah.
+- Themed storybook popups.
+- Google Maps uses RSVP-style button.
+- Gift adds BCA and copy buttons for each bank account.
+- Ucapan uses the supplied UCAPAN artwork and is compact on mobile.

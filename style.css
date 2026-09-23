@@ -133,3 +133,71 @@ form{display:grid;gap:13px}label{display:grid;gap:6px;font-size:12px;font-weight
 
 @media (min-width:700px){.scene{max-width:540px;margin:auto}.opening{padding:40px}.hint{font-size:13px}.floating-tools{right:18px}.guest-comments{left:18px}.modal-card{padding:34px 30px}}
 @media (max-width:380px){.tool{width:42px;height:42px}.names{font-size:38px}.opening h2{font-size:30px}.opening-small{font-size:12px}.hint{font-size:10px;bottom:2.5%}}
+
+/* V5 — storybook themed popups, compact mobile comments, and refined controls */
+.modal-card{
+  background:
+    radial-gradient(circle at 12% 12%, rgba(231,164,168,.18) 0 18px, transparent 19px),
+    radial-gradient(circle at 90% 88%, rgba(123,151,91,.13) 0 22px, transparent 23px),
+    linear-gradient(145deg,#fffaf0 0%,#fff5e5 100%);
+  border:1.5px solid rgba(104,73,45,.35);
+  box-shadow:0 22px 70px rgba(26,35,19,.42), inset 0 0 0 5px rgba(255,255,255,.3);
+}
+.modal-card::before,.modal-card::after{content:"✿";position:absolute;color:#9baa70;opacity:.45;font-size:25px;pointer-events:none}
+.modal-card::before{left:10px;top:7px;transform:rotate(-15deg)}
+.modal-card::after{right:12px;bottom:8px;transform:rotate(15deg)}
+.modal-close{background:#efe4d2;border:1px solid rgba(104,73,45,.12);box-shadow:0 3px 8px rgba(70,50,35,.08)}
+.modal h1,.modal h2{color:#3b291e;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+.kicker{color:#8a6a55}
+.info-grid .info-item{background:rgba(255,255,255,.58);border:1px solid rgba(115,83,57,.10);box-shadow:0 5px 14px rgba(75,53,36,.05)}
+.info-item b{color:#80634e}
+.info-item strong{display:block;font-family:"Cormorant Garamond",serif;font-size:21px;line-height:1.05;margin-bottom:2px}
+.info-item span{display:block;line-height:1.55}
+.maps-button{display:block;width:max-content;max-width:100%;margin:15px auto 0;text-decoration:none;text-align:center}
+.accounts{display:grid;gap:9px;margin:13px 0}
+.account-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:15px;background:rgba(255,255,255,.64);border:1px solid rgba(115,83,57,.11)}
+.account-item b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#80634e;margin-bottom:2px}
+.account-item span{display:block;font-weight:700;letter-spacing:.03em}
+.account-item small{display:block;font-size:9px;opacity:.65;margin-top:1px}
+.copy-btn{flex:0 0 auto;border:0;border-radius:999px;padding:8px 12px;background:#e8b2ae;color:#3b2922;font-size:10px;font-weight:700;cursor:pointer;box-shadow:0 5px 12px rgba(95,59,53,.12)}
+.copy-btn:active{transform:scale(.95)}
+.gift-address{margin-top:8px}
+.explore-list{display:grid;gap:8px;margin:14px 0;padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.48);border:1px dashed rgba(115,83,57,.18)}
+.explore-list span{font-size:12px;line-height:1.45}
+.info-note{font-size:11px!important;opacity:.72}
+.comment-title{width:90px;height:auto;object-fit:contain;object-position:left center}
+.show-comments img{width:75px;height:auto;display:block}
+
+/* The YHOLA & ARDAN board already exists in the artwork: this is only its invisible click area. */
+.couple{right:34%;top:18%;width:24%;height:22%}
+
+@media(max-width:699px){
+  .modal-card{width:min(91vw,410px);max-height:76dvh;padding:20px 15px;border-radius:20px}
+  .modal-card::before{font-size:19px;left:8px;top:6px}.modal-card::after{font-size:19px;right:8px;bottom:6px}
+  .modal h1,.modal h2{font-size:27px;margin-bottom:10px}
+  .modal p{font-size:12px;line-height:1.55}
+  .quote{font-size:15px}
+  .info-item strong{font-size:19px}
+  .account-item{padding:9px 10px}
+  .account-item span{font-size:12px}
+  .copy-btn{padding:7px 10px;font-size:9px}
+  .maps-button{padding:11px 20px;font-size:11px}
+
+  /* Ucapan is intentionally compact so the Gift artwork stays visible. */
+  .guest-comments{left:12px;right:auto;bottom:70px;width:258px}
+  .comment-card{width:258px;padding:8px 10px;border-radius:14px;background:rgba(255,248,234,.90);box-shadow:0 7px 20px rgba(0,0,0,.14)}
+  .comment-title{width:68px}
+  .comment-head button{font-size:17px;line-height:1}
+  .comment-text{font-size:10px;line-height:1.3;margin:2px 0 4px;max-height:30px;overflow:hidden}
+  .comment-actions{gap:5px}
+  .comment-actions .plus{width:25px;height:25px;font-size:17px}
+  .comment-actions button:last-child{font-size:8px}
+  .show-comments{bottom:70px;padding:8px 11px}
+  .show-comments img{width:62px}
+}
+
+@media(max-width:380px){
+  .guest-comments{width:238px}
+  .comment-card{width:238px}
+  .comment-title{width:62px}
+}

@@ -21,30 +21,31 @@
 
     <div class="hint">Klik objek di sekitar untuk menjelajahi cerita kami.</div>
 
-    <!-- Hotspots are intentionally transparent; the artwork remains untouched. -->
+    <!-- Transparent hotspots: artwork itself remains untouched. -->
     <button class="hotspot gallery" data-popup="gallery" aria-label="Gallery"></button>
-    <button class="hotspot about" data-popup="about" aria-label="Love Story"></button>
+    <button class="hotspot about" data-popup="about" aria-label="Cerita Kami"></button>
+    <button class="hotspot couple" data-popup="couple" aria-label="Data Pengantin Yhola dan Ardan"></button>
     <button class="hotspot rsvp" data-popup="rsvp" aria-label="RSVP"></button>
     <button class="hotspot date" data-popup="date" aria-label="Date & Venue"></button>
     <button class="hotspot gift" data-popup="gift" aria-label="Gift"></button>
 
     <div class="floating-tools">
-      <button id="infoBtn" class="tool" aria-label="Info"><img src="assets/INFO.png" alt=""></button>
-      <button id="musicBtn" class="tool" aria-label="Musik"><img id="musicIcon" src="assets/MUSIK.png" alt=""></button>
+      <button id="infoBtn" class="tool" aria-label="Info"><img src="assets/INFO.png" alt="Info"></button>
+      <button id="musicBtn" class="tool" aria-label="Musik"><img id="musicIcon" src="assets/MUSIK.png" alt="Musik menyala"></button>
     </div>
 
     <section class="guest-comments" id="commentsBox">
       <div class="comment-card">
-        <div class="comment-head"><strong id="commentName">Ucapan</strong><button id="nextComment" aria-label="Ucapan berikutnya">⌃</button></div>
+        <div class="comment-head"><img class="comment-title" src="assets/UCAPAN.png" alt="Ucapan"><button id="nextComment" aria-label="Ucapan berikutnya">⌃</button></div>
         <div id="commentText" class="comment-text">Tuliskan doa dan ucapan terbaik untuk Yhola & Ardan 🤍</div>
         <div class="comment-actions">
-          <button id="addComment" class="plus">＋</button>
+          <button id="addComment" class="plus" aria-label="Tambah ucapan">＋</button>
           <button id="hideComments">Sembunyikan Ucapan</button>
         </div>
       </div>
     </section>
 
-    <button id="showComments" class="show-comments">💌 Ucapan</button>
+    <button id="showComments" class="show-comments"><img src="assets/UCAPAN.png" alt="Ucapan"></button>
   </main>
 
   <div id="opening" class="opening">
