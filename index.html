@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6f8b43">
+<title>Yhola & Ardan — The Wedding</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- LOADING -->
+<section id="loading" class="screen">
+  <div id="loadingStage" class="stage">
+    <img class="full" src="assets/KSONGAN JIKA DIPERLUKAN.png" alt="">
+    <div id="bushSplit" class="bush-split" aria-hidden="true">
+      <img class="split-half split-left" src="assets/SEMAK UNTUK LOADIING.png" alt="">
+      <img class="split-half split-right" src="assets/SEMAK UNTUK LOADIING.png" alt="">
+    </div>
+    <img id="sideLeft" class="full side-bush left" src="assets/SEMAK KIRI.png" alt="">
+    <img id="sideRight" class="full side-bush right" src="assets/SEMAK KANAN.png" alt="">
+    <img class="full loading-board" src="assets/gantungan nama saat loading.png" alt="">
+    <img id="loadingBar" class="loading-bar" src="assets/LOADING KOSONG.png" alt="Loading">
+  </div>
+</section>
+
+<!-- START -->
+<section id="start" class="screen hidden">
+  <div class="stage start-stage">
+    <img class="full start-bg" src="assets/KSONGAN JIKA DIPERLUKAN.png" alt="">
+    <img class="full start-bush left" src="assets/SEMAK KIRI.png" alt="">
+    <img class="full start-bush right" src="assets/SEMAK KANAN.png" alt="">
+    <div class="start-vignette"></div>
+    <div class="start-copy">
+      <div class="to-guest">Kepada Yth. <span id="startGuest"></span></div>
+      <div class="latin-eyebrow">The Wedding of</div>
+      <div class="latin-name">Yhola</div>
+      <div class="latin-amp">&amp;</div>
+      <div class="latin-name">Ardan</div>
+      <div class="latin-sub">A little story of us...</div>
+    </div>
+    <button id="startBtn" class="image-button start-button" aria-label="START"><img src="assets/START.png" alt="START"></button>
+  </div>
+</section>
+
+<!-- TUTORIAL -->
+<section id="tutorial" class="screen hidden">
+  <div class="stage tutorial-stage">
+    <img class="full" src="assets/KSONGAN JIKA DIPERLUKAN.png" alt="">
+    <img class="full start-bush left" src="assets/SEMAK KIRI.png" alt="">
+    <img class="full start-bush right" src="assets/SEMAK KANAN.png" alt="">
+    <div class="tutorial-overlay"></div>
+    <div class="tutorial-card">
+      <button class="modal-x tutorial-close" id="tutorialClose" aria-label="Tutup">×</button>
+      <h2>🌿 Yuk, jelajahi cerita kami!</h2>
+      <p class="tutorial-lead">Coba klik tulisan dan objek di sekitar untuk melihat ceritanya.</p>
+      <p>Selamat menjelajah 🤍</p>
+      <div class="mini-list">
+        <div class="mini-row"><span class="mini-object mini-yh"></span><span>Tentang kami</span></div>
+        <div class="mini-row"><span class="mini-object mini-story"></span><span>Cerita kita</span></div>
+        <div class="mini-row"><span class="mini-object mini-date"></span><span>Hari dan tempat untuk merayakan cinta kami</span></div>
+        <div class="mini-row"><span class="mini-object mini-gallery"></span><span>Potret kecil cerita kami</span></div>
+        <div class="mini-row"><span class="mini-object mini-gift"></span><span>Tanda kasihmu</span></div>
+        <div class="mini-row"><span class="mini-object mini-rsvp"></span><span>Konfirmasi kehadiran</span></div>
+      </div>
+      <button id="continueBtn" class="image-button continue-button" aria-label="Lanjut Menjelajah"><img src="assets/lanjut menjelajah.png" alt="LANJUT MENJELAJAH"></button>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN SCENE -->
+<main id="scene" class="screen hidden">
+  <div id="sceneStage" class="stage scene-stage">
+    <img class="full scene-bg" src="assets/BG UTAMA KSONGAN.png" alt="">
+    <div id="objectLayers" class="object-layers"></div>
+    <div id="hotspots" class="hotspots"></div>
+    <div id="lampHit" class="lamp-hit" aria-label="Lampu" role="button" tabindex="0"></div>
+    <img id="lampGlow" class="full lamp-glow" src="assets/GLOW LAMPU .png" alt="">
+    <img id="lampImg" class="full lamp-img" src="assets/LAMPU DEKOR UTAMA.png" alt="">
+    <button id="musicBtn" class="scene-control music-control" aria-label="Musik"><img id="musicIcon" src="assets/MUSIC.png" alt="Musik"></button>
+    <button id="infoBtn" class="scene-control info-control" aria-label="Info"><img src="assets/INFO.png" alt="Info"></button>
+    <button id="ucapanBtn" class="scene-control ucapan-control" aria-label="Ucapan"><img src="assets/UCAPAN.png" alt="Ucapan"></button>
+    <div id="hand" class="hand hidden"><img src="assets/TANGAN.png" alt=""></div>
+    <div id="commentBubble" class="comment-bubble hidden"></div>
+    <button id="commentNext" class="comment-next hidden" aria-label="Ucapan berikutnya">⌃</button>
+    <button id="commentHide" class="comment-hide hidden">Sembunyikan Ucapan</button>
+  </div>
+</main>
+
+<!-- POPUP -->
+<div id="backdrop" class="hidden" aria-hidden="true">
+  <div class="popup-shell" role="dialog" aria-modal="true">
+    <button id="close" class="modal-x" aria-label="Tutup">×</button>
+    <div id="popupContent" class="popup-content"></div>
+  </div>
+</div>
+
+<audio id="m1" src="audio/music1.mp3" preload="auto"></audio>
+<audio id="m2" src="audio/music2.mp3" preload="auto"></audio>
+<audio id="vn" src="audio/vn.mp3" preload="auto"></audio>
+<script src="script.js"></script>
+</body>
+</html>
