@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Yhola & Ardan — The Wedding</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section id="loading" class="screen">
+  <div class="canvas-stage loading-stage">
+    <img class="canvas-asset semak-base" src="assets/SEMAK UNTUK LOADIING.png" alt="">
+    <img class="canvas-asset semak-left" src="assets/SEMAK KIRI.png" alt="">
+    <img class="canvas-asset semak-right" src="assets/SEMAK KANAN.png" alt="">
+    <img id="loadingBoard" class="canvas-asset loading-board" src="assets/gantungan nama saat loading.png" alt="">
+    <img id="loadingBar" class="loading-bar" src="assets/LOADING KOSONG.png" alt="">
+  </div>
+</section>
+
+<section id="start" class="screen hidden">
+  <div class="canvas-stage start-stage">
+    <img class="canvas-asset start-bg" src="assets/BG UTAMA KSONGAN.png" alt="">
+    <div class="start-cover"></div>
+    <button id="startBtn" aria-label="START"><img src="assets/START.png" alt="START"></button>
+  </div>
+</section>
+
+<main id="scene" class="hidden">
+  <div id="sceneStage" class="canvas-stage">
+    <img class="canvas-asset bg" src="assets/BG UTAMA KSONGAN.png" alt="">
+    <div id="objectLayers"></div>
+    <div id="hotspots"></div>
+    <img id="lampGlow" class="canvas-asset lamp-glow" src="assets/GLOW LAMPU .png" alt="">
+    <img id="lampImg" class="canvas-asset lamp-img" src="assets/LAMPU DEKOR UTAMA.png" alt="">
+    <button id="musicBtn" class="scene-btn music" aria-label="Musik"><img src="assets/MUSIC.png" alt=""></button>
+    <button id="infoBtn" class="scene-btn info" aria-label="Info"><img src="assets/INFO.png" alt=""></button>
+    <div id="hand" class="hand"><img src="assets/TANGAN.png" alt=""></div>
+    <div id="comment" class="comment hidden"><b id="cName"></b><div id="cMsg"></div><button id="cNext" aria-label="Ucapan berikutnya">⌄</button><button id="cHide">Sembunyikan Ucapan</button></div>
+  </div>
+</main>
+
+<div id="backdrop" class="hidden" aria-hidden="true">
+  <div id="popupStage" class="canvas-stage popup-stage">
+    <img id="popupFrame" class="canvas-asset popup-frame" src="assets/POP UP PENDEK SESUAI KANVAS.png" alt="">
+    <button id="close" aria-label="Tutup"><img src="assets/CLOSE ATAU X.png" alt=""></button>
+    <div id="popupContent" class="popup-content"></div>
+  </div>
+</div>
+
+<audio id="m1" src="audio/music1.mp3" preload="auto"></audio>
+<audio id="m2" src="audio/music2.mp3" preload="auto"></audio>
+<audio id="vn" src="audio/vn.mp3" preload="auto"></audio>
+<script src="script.js"></script>
+</body>
+</html>
