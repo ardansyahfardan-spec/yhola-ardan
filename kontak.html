@@ -70,8 +70,12 @@ try{statuses=JSON.parse(localStorage.getItem(storageKey)||'{}')}catch(e){statuse
 function key(c){return c.list+'|'+c.phone+'|'+c.name}
 function isSent(c){return statuses[key(c)]==='sent'}
 function save(){try{localStorage.setItem(storageKey,JSON.stringify(statuses))}catch(e){}}
-function saveContacts(){try{localStorage.setItem(contactsKey,JSON.stringify(contacts))}catch(e){$('fileInfo').textContent='Daftar kontak tidak bisa disimpan di browser. Jangan tutup tab sebelum selesai.'}}
+function saveContacts(){try{localStorage.setItem(contactsKey,JSON.stringify(contacts))}catch(e){$('fileInfo').textContent='Penyimpanan browser penuh. Ekspor Excel sebagai cadangan.'}}
 function restoreContacts(){try{const saved=JSON.parse(localStorage.getItem(contactsKey)||'null');if(saved&&Array.isArray(saved.YHOLA)&&Array.isArray(saved.ARDAN)){contacts=saved;$('fileInfo').textContent='Daftar kontak tersimpan di perangkat ini · '+(contacts.YHOLA.length+contacts.ARDAN.length)+' kontak. Tidak perlu upload ulang.';$('exportBtn').disabled=false;return true}}catch(e){}return false}
+const DB_NAME='yhola-ardan-invitation-db', DB_STORE='files';
+function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,1);req.onupgradeneeded=()=>req.result.createObjectStore(DB_STORE);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function saveExcelFile(file){const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(file,'originalExcel');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}
+async function restoreExcelFile(){try{const db=await openDB();const file=await new Promise((resolve,reject)=>{const req=db.transaction(DB_STORE,'readonly').objectStore(DB_STORE).get('originalExcel');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});db.close();if(file){const data=await file.arrayBuffer();workbook=XLSX.read(data,{type:'array'});$('fileInfo').textContent='File Excel tersimpan di perangkat ini · '+file.name+' · tidak perlu upload ulang.';$('exportBtn').disabled=false;return true}}catch(e){}return false}
 function norm(v){return String(v==null?'':v).trim()}
 function updateStats(){
 const all=[...contacts.YHOLA,...contacts.ARDAN],sent=all.filter(isSent).length;
@@ -106,6 +110,7 @@ $('loadBtn').addEventListener('click',async()=>{
 const f=$('fileInput').files[0];if(!f)return;
 try{
 const data=await f.arrayBuffer();workbook=XLSX.read(data,{type:'array'});
+await saveExcelFile(f);
 ['YHOLA','ARDAN'].forEach(name=>{
 const sheet=workbook.Sheets[name];contacts[name]=[];
 if(!sheet)return;
@@ -139,7 +144,7 @@ for(let i=1;i<rows.length;i++){const nm=norm(rows[i][nameCol]),ph=norm(rows[i][p
 });
 XLSX.writeFile(workbook,'LIST_KONTAK_YHOLA_ARDAN_STATUS.xlsx')
 });
-restoreContacts();updateStats();render();
+restoreContacts();updateStats();render();restoreExcelFile().then(ok=>{if(ok){restoreContacts();updateStats();render()}});
 })();
 </script>
 </body>
