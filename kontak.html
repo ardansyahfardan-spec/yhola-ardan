@@ -131,7 +131,7 @@ for(let i=1;i<rows.length;i++){
 const nm=norm(rows[i][nameCol]),ph=norm(rows[i][phoneCol]).replace(/\D/g,'');
 const c={list:name,name:nm,phone:ph};rows[i][statusCol]=isSent(c)?'Terkirim':(rows[i][statusCol]==='Terkirim'?'':'Belum dikirim')
 }
-for(let i=1;i<rows.length;i++){const nm=norm(rows[i][nameCol]),ph=norm(rows[i][phoneCol]).replace(/\\D/g,'');const c={list:name,name:nm,phone:ph};const ref=XLSX.utils.encode_cell({r:i,c:statusCol});if(!ws[ref])ws[ref]={t:'s',v:''};ws[ref].t='s';ws[ref].v=isSent(c)?'Terkirim':(norm(ws[ref].v)==='Terkirim'?'':'Belum dikirim')}
+for(let i=1;i<rows.length;i++){const nm=norm(rows[i][nameCol]),ph=norm(rows[i][phoneCol]).replace(/\D/g,'');const c={list:name,name:nm,phone:ph};const ref=XLSX.utils.encode_cell({r:i,c:statusCol});if(!ws[ref])ws[ref]={t:'s',v:''};ws[ref].t='s';ws[ref].v=isSent(c)?'Terkirim':(norm(ws[ref].v)==='Terkirim'?'':'Belum dikirim')}
 });
 XLSX.writeFile(workbook,'LIST_KONTAK_YHOLA_ARDAN_STATUS.xlsx')
 });
