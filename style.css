@@ -89,6 +89,8 @@
 
 
 
-/* Gallery masonry: rapatkan ruang kosong antar foto tanpa memotong gambar */
-.gallery{display:block;columns:2;column-gap:8px;column-fill:balance}
-.gallery img{display:block;width:100%;height:auto;max-height:none;aspect-ratio:auto;object-fit:contain;object-position:center;border-radius:12px;margin:0 0 8px;break-inside:avoid;page-break-inside:avoid}
+
+
+/* Gallery: dua portrait per baris, lalu dua landscape; foto tetap utuh */
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:8px;column-count:initial}
+.gallery img{display:block;width:100%;height:auto;max-height:none;aspect-ratio:auto;object-fit:contain;object-position:center;border-radius:12px;margin:0;break-inside:avoid}
