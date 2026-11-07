@@ -64,11 +64,14 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 const $=id=>document.getElementById(id);
 let workbook=null,contacts={YHOLA:[],ARDAN:[]},activeList='YHOLA',selected=null;
 const storageKey='yhola-ardan-wa-status-v1';
+const contactsKey='yhola-ardan-wa-contacts-v1';
 let statuses={};
 try{statuses=JSON.parse(localStorage.getItem(storageKey)||'{}')}catch(e){statuses={}}
 function key(c){return c.list+'|'+c.phone+'|'+c.name}
 function isSent(c){return statuses[key(c)]==='sent'}
 function save(){try{localStorage.setItem(storageKey,JSON.stringify(statuses))}catch(e){}}
+function saveContacts(){try{localStorage.setItem(contactsKey,JSON.stringify(contacts))}catch(e){$('fileInfo').textContent='Daftar kontak tidak bisa disimpan di browser. Jangan tutup tab sebelum selesai.'}}
+function restoreContacts(){try{const saved=JSON.parse(localStorage.getItem(contactsKey)||'null');if(saved&&Array.isArray(saved.YHOLA)&&Array.isArray(saved.ARDAN)){contacts=saved;$('fileInfo').textContent='Daftar kontak tersimpan di perangkat ini · '+(contacts.YHOLA.length+contacts.ARDAN.length)+' kontak. Tidak perlu upload ulang.';$('exportBtn').disabled=false;return true}}catch(e){}return false}
 function norm(v){return String(v==null?'':v).trim()}
 function updateStats(){
 const all=[...contacts.YHOLA,...contacts.ARDAN],sent=all.filter(isSent).length;
@@ -113,7 +116,8 @@ const c={list:name,name:norm(row[idx('Nama')]),phone:norm(row[idx('Nomor WhatsAp
 if(c.name||c.phone)contacts[name].push(c)
 })
 });
-$('fileInfo').textContent='Berhasil memuat '+f.name+' · '+(contacts.YHOLA.length+contacts.ARDAN.length)+' kontak terbaca.';
+saveContacts();
+$('fileInfo').textContent='Berhasil memuat '+f.name+' · '+(contacts.YHOLA.length+contacts.ARDAN.length)+' kontak terbaca. Daftar disimpan di perangkat ini.';
 $('exportBtn').disabled=false;updateStats();render();
 }catch(e){alert('File tidak dapat dibaca. Pastikan file berformat .xlsx atau .xls dan memiliki sheet YHOLA serta ARDAN.')}
 });
@@ -122,7 +126,7 @@ $('searchInput').addEventListener('input',render);
 $('previewSend').addEventListener('click',()=>{if(selected)openWhatsApp(selected)});
 $('closePreview').addEventListener('click',()=>{$('previewPanel').hidden=true});
 $('exportBtn').addEventListener('click',()=>{
-if(!workbook)return;
+if(!workbook){workbook=XLSX.utils.book_new();['YHOLA','ARDAN'].forEach(name=>{const rows=[['Nama','Nomor WhatsApp','Pesan WhatsApp','Status'],...contacts[name].map(c=>[c.name,c.phone,c.message,isSent(c)?'Terkirim':'Belum dikirim'])];XLSX.utils.book_append_sheet(workbook,XLSX.utils.aoa_to_sheet(rows),name)});}
 ['YHOLA','ARDAN'].forEach(name=>{
 const ws=workbook.Sheets[name];if(!ws)return;
 const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}),headers=(rows[0]||[]).map(norm),statusCol=headers.indexOf('Status'),nameCol=headers.indexOf('Nama'),phoneCol=headers.indexOf('Nomor WhatsApp');
@@ -135,7 +139,7 @@ for(let i=1;i<rows.length;i++){const nm=norm(rows[i][nameCol]),ph=norm(rows[i][p
 });
 XLSX.writeFile(workbook,'LIST_KONTAK_YHOLA_ARDAN_STATUS.xlsx')
 });
-updateStats();
+restoreContacts();updateStats();render();
 })();
 </script>
 </body>
