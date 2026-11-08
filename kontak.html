@@ -37,13 +37,11 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 <header><div class="eyebrow">The Wedding of</div><h1>Yhola &amp; Ardan</h1><p>Pengelolaan undangan WhatsApp personal</p></header>
 <main>
 <section class="panel">
-<h2>1. Masukkan daftar kontak</h2>
-<div class="file-row"><input id="fileInput" type="file" accept=".xlsx,.xls"><button id="loadBtn" disabled>Impor Excel</button></div>
-<p class="hint">Pilih file LIST_KONTAK_YHOLA_ARDAN_IPHONE_WA_IG.xlsx dari iPhone. Data dibaca langsung di perangkat ini dan tidak diunggah ke server.</p>
-<div id="fileInfo" class="hint">Belum ada file yang dimuat.</div>
+<h2>1. Daftar kontak</h2>
+<p class="hint">Data kontak sudah tersimpan langsung di halaman ini. Tidak perlu upload Excel dan bisa dibuka dari HP lain.</p>
 <div class="stats"><div class="stat"><strong id="totalCount">0</strong><span>Kontak</span></div><div class="stat"><strong id="sentCount">0</strong><span>Terkirim</span></div><div class="stat"><strong id="remainingCount">0</strong><span>Belum dikirim</span></div></div>
 <div class="progress"><div id="progressBar"></div></div>
-<div class="notice">WhatsApp pribadi tidak mengizinkan pengiriman massal otomatis. Tombol di halaman ini membuka chat WhatsApp dengan pesan siap kirim; kamu tetap menekan tombol <b>Kirim</b> di WhatsApp.</div>
+<div class="notice">WhatsApp pribadi tetap mengharuskan kamu menekan tombol <b>Kirim</b> di WhatsApp. Halaman ini hanya membuka chat dengan pesan personal yang sudah terisi.</div>
 </section>
 <section class="panel">
 <h2>2. Pilih daftar dan kirim</h2>
@@ -62,89 +60,31 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 <script>
 (function(){
 const $=id=>document.getElementById(id);
+const embedded={"YHOLA":[["Bu Vicky","628993665300","PAK/BU"],["Mba Dhea","6285777089845","KAK/MAS/MBAK"],["dr. Riva","6281357484848","DR."],["dr. Lisiana","6281327170800","DR."],["dr. Ruri","6282244883660","DR."],["dr. Merisa","6281333662868","DR."],["dr. Bebie","6282277651435","DR."],["Devi","6283824066655","NAMA"],["Vega","62895330964437","NAMA"],["Mbak Laila","6281335577170","KAK/MAS/MBAK"],["Mbak Amel","6281233461788","KAK/MAS/MBAK"],["Dyah","6282223091379","NAMA"],["Rivanda","6281357006763","NAMA"],["Hanina","6281336780635","NAMA"],["Mbak Hindun","6285859644408","KAK/MAS/MBAK"],["Mbak Bela","6285820156968","KAK/MAS/MBAK"],["Fita","6288217103654","NAMA"],["Lek Hadori","6285931198411","NAMA"],["Mas Adim","6289516757575","KAK/MAS/MBAK"],["Mbak Tifani","6282132251102","KAK/MAS/MBAK"],["Mbak Aruna","6282131426500","KAK/MAS/MBAK"],["Mbak Shafa","6281233456066","KAK/MAS/MBAK"],["Lia","6289616870019","NAMA"],["Sarah","6281779337710","NAMA"],["Alda","6281315870929","NAMA"],["Wahyu","6285832461700","NAMA"],["Mas Adjie","6281230642185","KAK/MAS/MBAK"],["Mbak Poppy","6289683442787","KAK/MAS/MBAK"],["Mbak Inna","6281329148468","KAK/MAS/MBAK"],["Mbak Inna","6285733062314","KAK/MAS/MBAK"],["Mbak Ferly","6283857058071","KAK/MAS/MBAK"],["Mbak Iis","62895603810859","KAK/MAS/MBAK"],["Millen","6281336399207","NAMA"],["Awe","6282142627381","NAMA"],["Rahayu","6282257337724","NAMA"],["Mas Efe","6285730128886","KAK/MAS/MBAK"],["Arta","6289670708125","NAMA"],["Sherina","6281230947282","NAMA"],["Resta","6285857298779","NAMA"],["Ce Ardo","6281232557722","NAMA"],["Bunda Diah","6281335200351","NAMA"],["Mas Agusta","6285779866354","KAK/MAS/MBAK"],["dr. Arin","628113116787","DR."],["Dika","628978880812","NAMA"],["Dika","6289634938833","NAMA"],["Event","6282230360888","NAMA"],["Adrian & Puput","6285934730222","NAMA"],["Adrian & Puput","6285731987682","NAMA"],["Intan","6281216805749","NAMA"],["Mbak Ria","6285850770436","KAK/MAS/MBAK"],["Mbak Ria","6281329576719","KAK/MAS/MBAK"],["Rali","6289619459300","NAMA"],["Tita","6285649487622","NAMA"],["Isa","6285815299527","NAMA"],["Dhalila + Mama","6282233920042","NAMA"],["Hasti","6285730193093","NAMA"],["Wildan (Pak Niman)","6281232568294","NAMA"],["Torik","6285835464686","NAMA"],["Windy","6282244089818","NAMA"],["Amel GY","6282231494313","NAMA"],["Icha","62895402484549","NAMA"],["dr. Sriatun","6285859270005","DR."],["Pak Faris","6281331408800","PAK/BU"],["Bu Kusmini","6285733086690","PAK/BU"],["Bu Nok","6285235844439","PAK/BU"],["Bu Susan","6281330434185","PAK/BU"],["Pak Dony","6285230132629","PAK/BU"],["Khoir","6285217200987","NAMA"],["Dara","6289626777974","NAMA"],["Ajeng Wul","6285733114918","NAMA"],["Alin","628155969781362822","NAMA"],["Naning","6285736412838","NAMA"],["Sasa","6282140761480","NAMA"],["Isna","6285854032371","NAMA"],["Fida","6281334515572","NAMA"],["Annisa Nganjuk","6281252477857","NAMA"],["Dina","628384595009762838","NAMA"],["Nurul Amaliyah","6282142081494","NAMA"],["Aris Novi","6282247111640","NAMA"],["Fitra","6282147941470","NAMA"],["Ajeng Ruf","6288231929460","NAMA"],["Hatipah","6285815266128","NAMA"],["Candrawati","62895397099833","NAMA"],["Reni","6283830649359","NAMA"],["Farin","6283830140261","NAMA"],["Fifi","6281997022569","NAMA"],["Cindy","6283849942716","NAMA"],["Eci","6287751412974","NAMA"],["Nindya","6281227872825","NAMA"],["Eryka","6285853252533","NAMA"],["Ida","6289688307161","NAMA"],["Widya","62895335899614","NAMA"],["Nabila","6288805428811","NAMA"],["Jihan","628977458148","NAMA"],["Kenie","6288217932092","NAMA"],["Amy","6285856148758","NAMA"],["Arifah","6285746877633","NAMA"],["Feby","62895366565330","NAMA"],["Dian Er","62895367622784","NAMA"],["Thalita","6285655223514","NAMA"],["Raras","6282139965103","NAMA"],["Tito","6287759720095","NAMA"],["Laras","6282257497613","NAMA"],["Tri Mirda","6285607012654","NAMA"],["Prilly","6287762331514","NAMA"],["Berliana","6289687324214","NAMA"],["Aisyah","6289518811011","NAMA"],["Olivia","6285733331380","NAMA"],["Umami","6285606422615","NAMA"],["Firda","6289635737000","NAMA"],["Tanti","6281216033176","NAMA"],["Fitriani","628987782687","NAMA"],["Maya","6289677905561","NAMA"],["Wulan","6282232332636","NAMA"],["Nandika","6283831646988","NAMA"],["Athena","6281330552145","NAMA"],["Okta","6281235203240","NAMA"],["Cece Mira","6285852884827","NAMA"],["Tanty","6289692638058","NAMA"],["Tya","62895621060915","NAMA"],["Mas Dhika","6289688303130","KAK/MAS/MBAK"],["Mbak Deby","6285853030901","KAK/MAS/MBAK"],["Kiki","6285707521618","NAMA"],["Laili","6285850068269","NAMA"],["Bu Yanthi","","PAK/BU"],["Erlita","","NAMA"],["Anjani","","NAMA"],["Nurhayati","","NAMA"],["Mira","","NAMA"],["Dewi Suviya","","NAMA"],["Aulia","","NAMA"],["Rayyan","","NAMA"]],"ARDAN":[["Ambrosius Bumindo","6281224868612","NAMA"],["Agus Bumindo","6285649278622","NAMA"],["Amor Bumindo","6281333605301","NAMA"],["Aulia Bumindo","62895606763080","NAMA"],["Cornel Bumindo","6281236632515","NAMA"],["Devi Bumindo","628139230752","NAMA"],["Dika Bumindo","628133181195","NAMA"],["Jojo Bumindo","6288211175533","NAMA"],["Karley Bumindo","6282175496745","NAMA"],["Lia Bumindo","6281231918423","NAMA"],["Adhit Bumindo","6281366363771","NAMA"],["Eko Bumindo","6289656466900","NAMA"],["Fajar Bumindo","6285895310726","NAMA"],["Fauzi Bumindo","6285100837362","NAMA"],["Febby Bumindo","6282232494488","NAMA"],["Hasan Bumindo","6281553839413","NAMA"],["Rizki Bumindo","6281234317914","NAMA"],["Anis Bumindo","6283831105195","NAMA"],["Nadhila Bumindo","6281252050404","NAMA"],["Esti Bumindo","6281133301998","NAMA"],["Tika Bumindo","62895631629813","NAMA"],["Mylen Bumindo","6281228081200","NAMA"],["Windy Bumindo","6285230712745","NAMA"],["Natalia Bumindo","628133059413","NAMA"],["Fajar Krida Bumindo","6282139943543","NAMA"],["Zainul Bumindo","6281334612871","NAMA"],["Hudi Bumindo","6281216415280","NAMA"],["Rey Bumindo","6282245773847","NAMA"],["Taris Bumindo","6281336688522","NAMA"],["Zulinda Bumindo","6287756673960","NAMA"],["Lidya Bumindo","62895803338958","NAMA"],["Ika Bumindo","6285607627199","NAMA"],["Wenny Bumindo","6281282385148","NAMA"],["Rini Bumindo","6281252220298","NAMA"],["Naila Bumindo","6285703646454","NAMA"],["Adi Bumindo","6281931002717","NAMA"],["Risty Bumindo","6285890442176","NAMA"],["Cindy Bumindo","6281252077636","NAMA"],["Fathin Bumindo","6285692002802","NAMA"],["Handi Bumindo","6282117459296","NAMA"],["Hartono Bumindo","6281357006222","NAMA"],["Ifa Bumindo","6285733142425","NAMA"],["Indra Bumindo","628563007666","NAMA"],["Indra Jaya Bumindo","6285784385201","NAMA"],["Jeffri Bumindo","6282336086183","NAMA"],["Rini Hotmix Bumindo","628977741337","NAMA"],["Arfie Bumindo","6285748161704","NAMA"],["Sassy Bumindo","628113405194","NAMA"],["Sumadi Bumindo","6285731070509","NAMA"],["Yoshua Bumindo","6282132207854","NAMA"],["Gita Bumindo","6281229999102","NAMA"],["Fanny Bumindo","6288989124754","NAMA"],["Yusuf & Cantik Impact","6282175005503","NAMA"],["Aghy Impact","6287758396596","NAMA"],["Salwa Impact","6287752491908","NAMA"],["Dinova Impact","6287758400748","NAMA"],["Eka Impact","6285607518401","NAMA"],["Fajar Impact","6287758928355","NAMA"],["Iqbal Impact","6285816971562","NAMA"],["Viko Impact","6283845195870","NAMA"],["Agung","6289651786366","NAMA"],["Aldo","628982851922","NAMA"],["Fikri","6289608194187","NAMA"],["Ayup Tri Widyono","6282141408522","NAMA"],["Anca","6285708488363","NAMA"],["Mahendra Cielo","6287855516614","NAMA"],["Wulan Cielo","6281392238645","NAMA"],["Dzikra","6285257955241","NAMA"],["Elok","6289659887887","NAMA"],["Ferdy","6287848280076","NAMA"],["Gandis","6285156728860","NAMA"],["Icus Rizal","6285729836098","NAMA"],["Ulya","6289649244916","NAMA"],["Kang Inok","6289519118986","NAMA"],["Kidung Rama","6285697281634","NAMA"],["Annisa Nov","6287784168080","NAMA"],["Putri","6289525002902","NAMA"],["Refal","6289643509256","NAMA"],["Rezal","6281996220401","NAMA"],["Shadencok","6289517633890","NAMA"],["Siti","6289508744804","NAMA"],["Tio","6289523376572","NAMA"],["Ulul","6283845698987","NAMA"],["Icha","62895402484549","NAMA"],["Yunda","6287868836004","NAMA"],["Zain","6283834414286","NAMA"],["Bos Anindya Macak","628813202818","NAMA"],["Ami","6281233516015","NAMA"],["Alfani","6285731656812","NAMA"],["Iqbal","6289699002912","NAMA"],["Ridho","6285804113571","NAMA"],["Wildan","6285606553523","NAMA"],["Deni","6289635804030","NAMA"],["Dito","6289676075298","NAMA"],["Hudan + Ek Sur","6283854177464","NAMA"],["Jovi","62895380927733","NAMA"],["Mahendra","6287765141636","NAMA"],["Rayan","6289666102480","NAMA"],["Zein","6281993314124","NAMA"],["Ardan GH","62881081180300","NAMA"]]};
 let workbook=null,contacts={YHOLA:[],ARDAN:[]},activeList='YHOLA',selected=null;
-const storageKey='yhola-ardan-wa-status-v1';
-const contactsKey='yhola-ardan-wa-contacts-v1';
-let statuses={};
+const storageKey='yhola-ardan-wa-status-v1';let statuses={};
 try{statuses=JSON.parse(localStorage.getItem(storageKey)||'{}')}catch(e){statuses={}}
 function key(c){return c.list+'|'+c.phone+'|'+c.name}
 function isSent(c){return statuses[key(c)]==='sent'}
 function save(){try{localStorage.setItem(storageKey,JSON.stringify(statuses))}catch(e){}}
-function saveContacts(){try{localStorage.setItem(contactsKey,JSON.stringify(contacts))}catch(e){$('fileInfo').textContent='Penyimpanan browser penuh. Ekspor Excel sebagai cadangan.'}}
-function restoreContacts(){try{const saved=JSON.parse(localStorage.getItem(contactsKey)||'null');if(saved&&Array.isArray(saved.YHOLA)&&Array.isArray(saved.ARDAN)){contacts=saved;$('fileInfo').textContent='Daftar kontak tersimpan di perangkat ini · '+(contacts.YHOLA.length+contacts.ARDAN.length)+' kontak. Tidak perlu upload ulang.';$('exportBtn').disabled=false;return true}}catch(e){}return false}
-const DB_NAME='yhola-ardan-invitation-db', DB_STORE='files';
-function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,1);req.onupgradeneeded=()=>req.result.createObjectStore(DB_STORE);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
-async function saveExcelFile(file){const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(file,'originalExcel');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}
-async function restoreExcelFile(){try{const db=await openDB();const file=await new Promise((resolve,reject)=>{const req=db.transaction(DB_STORE,'readonly').objectStore(DB_STORE).get('originalExcel');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});db.close();if(file){const data=await file.arrayBuffer();workbook=XLSX.read(data,{type:'array'});$('fileInfo').textContent='File Excel tersimpan di perangkat ini · '+file.name+' · tidak perlu upload ulang.';$('exportBtn').disabled=false;return true}}catch(e){}return false}
-function norm(v){return String(v==null?'':v).trim()}
-function updateStats(){
-const all=[...contacts.YHOLA,...contacts.ARDAN],sent=all.filter(isSent).length;
-$('totalCount').textContent=all.length;$('sentCount').textContent=sent;$('remainingCount').textContent=all.length-sent;
-$('progressBar').style.width=(all.length?sent/all.length*100:0)+'%';
+function makeMessage(name,type){
+const link='https://ardansyahfardan-spec.github.io/yhola-ardan/?to='+encodeURIComponent(name);
+if(type==='PAK/BU')return 'Salam hangat, '+name+'.\n\nDengan penuh kebahagiaan, kami ingin menyampaikan kabar baik bahwa Yhola & Ardan akan melangsungkan pernikahan.\n\nMerupakan suatu kehormatan bagi kami apabila '+name+' berkenan hadir dan berbagi kebahagiaan bersama kami.\n\nDetail acara dan informasi selengkapnya dapat '+name+' lihat melalui undangan digital berikut:\n\n'+link+'\n\nKehadiran serta doa restu '+name+' akan sangat berarti bagi kami.\n\nYhola & Ardan';
+if(type==='DR.')return 'Halo, '+name+'\n\nKami ingin berbagi kabar bahagia dengan '+name+'.\nYhola & Ardan akan melangsungkan pernikahan.\n\nDengan senang hati, kami mengundang '+name+' untuk hadir dan berbagi kebahagiaan bersama kami.\n\nDetail acara dan informasi selengkapnya dapat '+name+' lihat melalui undangan digital berikut:\n\n'+link+'\n\nKehadiran dan doa restu '+name+' akan menjadi kebahagiaan tersendiri bagi kami.\n\nSampai bertemu di hari bahagia kami.\n\nYhola & Ardan';
+if(type==='KAK/MAS/MBAK')return 'Hai '+name+'\n\nKami ingin berbagi kabar bahagia dengan '+name+'.\nYhola & Ardan akan melangsungkan pernikahan.\n\nDengan senang hati, kami mengundang '+name+' untuk hadir dan berbagi kebahagiaan bersama kami.\n\nDetail acara dan informasi selengkapnya dapat '+name+' lihat melalui undangan digital berikut:\n\n'+link+'\n\nKehadiran dan doa restu '+name+' akan menjadi kebahagiaan tersendiri bagi kami.\n\nSampai bertemu di hari bahagia kami.\n\nYhola & Ardan';
+return 'Hai '+name+'\n\nKami ingin berbagi kabar bahagia dengan '+name+'.\nYhola & Ardan akan melangsungkan pernikahan.\n\nDengan senang hati, kami mengundang '+name+' untuk hadir dan berbagi kebahagiaan bersama kami.\n\nDetail acara dan informasi selengkapnya dapat '+name+' lihat melalui undangan digital berikut:\n\n'+link+'\n\nKehadiran dan doa restu '+name+' akan menjadi kebahagiaan tersendiri bagi kami.\n\nSampai bertemu di hari bahagia kami.\n\nYhola & Ardan';
 }
+Object.keys(embedded).forEach(list=>contacts[list]=embedded[list].map(x=>({list,name:x[0],phone:x[1],message:makeMessage(x[0],x[2])})));
+function updateStats(){const all=[...contacts.YHOLA,...contacts.ARDAN],sent=all.filter(isSent).length;$('totalCount').textContent=all.length;$('sentCount').textContent=sent;$('remainingCount').textContent=all.length-sent;$('progressBar').style.width=(all.length?sent/all.length*100:0)+'%'}
 function render(){
-const q=$('searchInput').value.toLowerCase(),list=contacts[activeList].filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));
-$('contactList').innerHTML='';
+const q=$('searchInput').value.toLowerCase(),list=contacts[activeList].filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));$('contactList').innerHTML='';
 if(!list.length){$('contactList').innerHTML='<div class="empty">'+(contacts[activeList].length?'Kontak tidak ditemukan.':'Tidak ada kontak pada daftar ini.')+'</div>';return}
-list.forEach(c=>{
-const sent=isSent(c),el=document.createElement('article');el.className='contact';
-const top=document.createElement('div');top.className='contact-top';
-const info=document.createElement('div');const nm=document.createElement('div');nm.className='name';nm.textContent=c.name||'(Tanpa nama)';
-const meta=document.createElement('div');meta.className='meta';meta.textContent=c.phone||'Nomor tidak tersedia';info.append(nm,meta);
-const badge=document.createElement('span');badge.className='status'+(sent?' sent':'');badge.textContent=sent?'Terkirim':'Belum dikirim';top.append(info,badge);
-const actions=document.createElement('div');actions.className='actions';
-const send=document.createElement('button');send.textContent=sent?'Kirim ulang':'Kirim WhatsApp';send.disabled=!c.phone||!c.message;send.addEventListener('click',()=>openWhatsApp(c));
-const preview=document.createElement('button');preview.className='secondary';preview.textContent='Lihat pesan';preview.addEventListener('click',()=>showPreview(c));
-const mark=document.createElement('button');mark.className='secondary';mark.textContent=sent?'Batalkan status':'Tandai terkirim';mark.addEventListener('click',()=>{if(sent)delete statuses[key(c)];else statuses[key(c)]='sent';save();render();updateStats()});
-actions.append(send,preview,mark);el.append(top,actions);$('contactList').append(el)
-})
-}
+list.forEach(c=>{const sent=isSent(c),el=document.createElement('article');el.className='contact';const top=document.createElement('div');top.className='contact-top';const info=document.createElement('div');const nm=document.createElement('div');nm.className='name';nm.textContent=c.name||'(Tanpa nama)';const meta=document.createElement('div');meta.className='meta';meta.textContent=c.phone||'Nomor tidak tersedia';info.append(nm,meta);const badge=document.createElement('span');badge.className='status'+(sent?' sent':'');badge.textContent=sent?'Terkirim':'Belum dikirim';top.append(info,badge);const actions=document.createElement('div');actions.className='actions';const send=document.createElement('button');send.textContent=sent?'Kirim ulang':'Kirim WhatsApp';send.disabled=!c.phone||!c.message;send.addEventListener('click',()=>openWhatsApp(c));const preview=document.createElement('button');preview.className='secondary';preview.textContent='Lihat pesan';preview.addEventListener('click',()=>showPreview(c));const mark=document.createElement('button');mark.className='secondary';mark.textContent=sent?'Batalkan status':'Tandai terkirim';mark.addEventListener('click',()=>{if(sent)delete statuses[key(c)];else statuses[key(c)]='sent';save();render();updateStats()});actions.append(send,preview,mark);el.append(top,actions);$('contactList').append(el)})}
 function showPreview(c){selected=c;$('previewPanel').hidden=false;$('previewName').textContent=c.name+' · '+c.phone;$('messagePreview').textContent=c.message;$('previewPanel').scrollIntoView({behavior:'smooth',block:'start'})}
-function openWhatsApp(c){
-if(!c.phone||!c.message)return;
-const url='https://wa.me/'+c.phone.replace(/\D/g,'')+'?text='+encodeURIComponent(c.message);
-window.location.href=url;
-}
-$('fileInput').addEventListener('change',()=>{$('loadBtn').disabled=!$('fileInput').files.length});
-$('loadBtn').addEventListener('click',async()=>{
-const f=$('fileInput').files[0];if(!f)return;
-try{
-const data=await f.arrayBuffer();workbook=XLSX.read(data,{type:'array'});
-await saveExcelFile(f);
-['YHOLA','ARDAN'].forEach(name=>{
-const sheet=workbook.Sheets[name];contacts[name]=[];
-if(!sheet)return;
-const rows=XLSX.utils.sheet_to_json(sheet,{header:1,defval:''});
-const headers=(rows.shift()||[]).map(norm);const idx=label=>headers.indexOf(label);
-rows.forEach(row=>{
-const c={list:name,name:norm(row[idx('Nama')]),phone:norm(row[idx('Nomor WhatsApp')]).replace(/\D/g,''),message:norm(row[idx('Pesan WhatsApp')]),status:norm(row[idx('Status')])};
-if(c.name||c.phone)contacts[name].push(c)
-})
-});
-saveContacts();
-$('fileInfo').textContent='Berhasil memuat '+f.name+' · '+(contacts.YHOLA.length+contacts.ARDAN.length)+' kontak terbaca. Daftar disimpan di perangkat ini.';
+function openWhatsApp(c){if(!c.phone||!c.message)return;window.location.href='https://wa.me/'+c.phone+'?text='+encodeURIComponent(c.message)}
+$('searchInput').addEventListener('input',render);document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{activeList=b.dataset.list;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));render()}));$('previewSend').addEventListener('click',()=>{if(selected)openWhatsApp(selected)});$('closePreview').addEventListener('click',()=>{$('previewPanel').hidden=true});
+$('exportBtn').addEventListener('click',()=>{workbook=XLSX.utils.book_new();['YHOLA','ARDAN'].forEach(name=>{const rows=[['Nama','Nomor WhatsApp','Pesan WhatsApp','Status'],...contacts[name].map(c=>[c.name,c.phone,c.message,isSent(c)?'Terkirim':'Belum dikirim'])];XLSX.utils.book_append_sheet(workbook,XLSX.utils.aoa_to_sheet(rows),name)});XLSX.writeFile(workbook,'LIST_KONTAK_YHOLA_ARDAN_STATUS.xlsx')});
 $('exportBtn').disabled=false;updateStats();render();
-}catch(e){alert('File tidak dapat dibaca. Pastikan file berformat .xlsx atau .xls dan memiliki sheet YHOLA serta ARDAN.')}
-});
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{activeList=b.dataset.list;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));render()}));
-$('searchInput').addEventListener('input',render);
-$('previewSend').addEventListener('click',()=>{if(selected)openWhatsApp(selected)});
-$('closePreview').addEventListener('click',()=>{$('previewPanel').hidden=true});
-$('exportBtn').addEventListener('click',()=>{
-if(!workbook){workbook=XLSX.utils.book_new();['YHOLA','ARDAN'].forEach(name=>{const rows=[['Nama','Nomor WhatsApp','Pesan WhatsApp','Status'],...contacts[name].map(c=>[c.name,c.phone,c.message,isSent(c)?'Terkirim':'Belum dikirim'])];XLSX.utils.book_append_sheet(workbook,XLSX.utils.aoa_to_sheet(rows),name)});}
-['YHOLA','ARDAN'].forEach(name=>{
-const ws=workbook.Sheets[name];if(!ws)return;
-const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}),headers=(rows[0]||[]).map(norm),statusCol=headers.indexOf('Status'),nameCol=headers.indexOf('Nama'),phoneCol=headers.indexOf('Nomor WhatsApp');
-if(statusCol<0)return;
-for(let i=1;i<rows.length;i++){
-const nm=norm(rows[i][nameCol]),ph=norm(rows[i][phoneCol]).replace(/\D/g,'');
-const c={list:name,name:nm,phone:ph};rows[i][statusCol]=isSent(c)?'Terkirim':(rows[i][statusCol]==='Terkirim'?'':'Belum dikirim')
-}
-for(let i=1;i<rows.length;i++){const nm=norm(rows[i][nameCol]),ph=norm(rows[i][phoneCol]).replace(/\D/g,'');const c={list:name,name:nm,phone:ph};const ref=XLSX.utils.encode_cell({r:i,c:statusCol});if(!ws[ref])ws[ref]={t:'s',v:''};ws[ref].t='s';ws[ref].v=isSent(c)?'Terkirim':(norm(ws[ref].v)==='Terkirim'?'':'Belum dikirim')}
-});
-XLSX.writeFile(workbook,'LIST_KONTAK_YHOLA_ARDAN_STATUS.xlsx')
-});
-restoreContacts();updateStats();render();restoreExcelFile().then(ok=>{if(ok){restoreContacts();updateStats();render()}});
 })();
 </script>
 </body>
