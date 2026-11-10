@@ -65,7 +65,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 <section class="panel" id="previewPanel" hidden>
 <h2>Pratinjau pesan</h2>
 <div id="previewName" class="hint"></div><div id="messagePreview"></div>
-<div class="actions"><button id="previewSend">Buka WhatsApp</button><button id="closePreview" class="secondary">Tutup</button></div>
+<div class="actions"><button id="copyPreview">Copy Kalimat</button><button id="previewSend">Buka WhatsApp</button><button id="closePreview" class="secondary">Tutup</button></div>
 </section>
 <footer>Yhola &amp; Ardan · 22 November 2026</footer>
 </main>
@@ -106,6 +106,22 @@ list.forEach(c=>{const sent=isSent(c),el=document.createElement('article');el.cl
 const ig=document.createElement('button');ig.className='secondary';ig.textContent=c.instagram?'DM Instagram':'Instagram belum diisi';ig.disabled=!c.instagram;ig.addEventListener('click',()=>openInstagram(c));
 const preview=document.createElement('button');preview.className='secondary';preview.textContent='Lihat pesan';preview.addEventListener('click',()=>showPreview(c));const mark=document.createElement('button');mark.className='secondary';mark.textContent=sent?'Batalkan status':'Tandai terkirim';mark.addEventListener('click',()=>{if(sent)delete statuses[key(c)];else statuses[key(c)]='sent';save();render();updateStats()});actions.append(send,ig,preview,mark);el.append(top,actions);$('contactList').append(el)})}
 function showPreview(c){selected=c;$('previewPanel').hidden=false;$('previewName').textContent=c.name+' · '+c.phone;$('messagePreview').textContent=c.message;$('previewPanel').scrollIntoView({behavior:'smooth',block:'start'})}
+async function copyMessage(message){
+try{
+ await navigator.clipboard.writeText(message);
+ alert('Kalimat undangan sudah disalin. Tinggal paste di WhatsApp atau Instagram.');
+}catch(e){
+ try{
+  const ta=document.createElement('textarea');ta.value=message;
+  ta.style.position='fixed';ta.style.left='-9999px';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  document.execCommand('copy');ta.remove();
+  alert('Kalimat undangan sudah disalin. Tinggal paste di WhatsApp atau Instagram.');
+ }catch(err){
+  alert('Gagal menyalin otomatis. Silakan tekan lama pada kalimat lalu pilih Salin.');
+ }
+}
+}
 function openWhatsApp(c){if(!c.phone||!c.message)return;window.location.href='https://wa.me/'+c.phone+'?text='+encodeURIComponent(c.message)}
 async function openInstagram(c){
 if(!c.instagram)return;
@@ -161,7 +177,7 @@ $('addPanel').hidden=true;
 render();
 updateStats();
 });
-$('searchInput').addEventListener('input',render);document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{activeList=b.dataset.list;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));render()}));$('previewSend').addEventListener('click',()=>{if(selected)openWhatsApp(selected)});$('closePreview').addEventListener('click',()=>{$('previewPanel').hidden=true});
+$('searchInput').addEventListener('input',render);document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{activeList=b.dataset.list;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));render()}));$('copyPreview').addEventListener('click',()=>{if(selected)copyMessage(selected.message)});$('previewSend').addEventListener('click',()=>{if(selected)openWhatsApp(selected)});$('closePreview').addEventListener('click',()=>{$('previewPanel').hidden=true});
 $('exportBtn').addEventListener('click',()=>{workbook=XLSX.utils.book_new();['YHOLA','ARDAN'].forEach(name=>{const rows=[['Nama','Nomor WhatsApp','Pesan WhatsApp','Status'],...contacts[name].map(c=>[c.name,c.phone,c.message,isSent(c)?'Terkirim':'Belum dikirim'])];XLSX.utils.book_append_sheet(workbook,XLSX.utils.aoa_to_sheet(rows),name)});XLSX.writeFile(workbook,'LIST_KONTAK_YHOLA_ARDAN_STATUS.xlsx')});
 $('exportBtn').disabled=false;saveContacts();updateStats();render();
 })();
