@@ -54,6 +54,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 <div style="display:grid;gap:9px">
 <input id="newName" type="text" placeholder="Nama kontak" style="border:1px solid var(--line);border-radius:11px;padding:12px;font-size:14px">
 <input id="newPhone" type="tel" inputmode="numeric" placeholder="Nomor WhatsApp, contoh 628123456789" style="border:1px solid var(--line);border-radius:11px;padding:12px;font-size:14px">
+<input id="newInstagram" type="text" placeholder="Username Instagram (opsional), contoh @namaakun" style="border:1px solid var(--line);border-radius:11px;padding:12px;font-size:14px">
 <div style="display:flex;gap:8px">
 <button id="saveContactBtn">Simpan Kontak</button>
 <button id="cancelAddBtn" class="secondary">Batal</button>
@@ -101,9 +102,12 @@ function updateStats(){const all=[...contacts.YHOLA,...contacts.ARDAN],sent=all.
 function render(){
 const q=$('searchInput').value.toLowerCase(),list=contacts[activeList].filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));$('contactList').innerHTML='';
 if(!list.length){$('contactList').innerHTML='<div class="empty">'+(contacts[activeList].length?'Kontak tidak ditemukan.':'Tidak ada kontak pada daftar ini.')+'</div>';return}
-list.forEach(c=>{const sent=isSent(c),el=document.createElement('article');el.className='contact';const top=document.createElement('div');top.className='contact-top';const info=document.createElement('div');const nm=document.createElement('div');nm.className='name';nm.textContent=c.name||'(Tanpa nama)';const meta=document.createElement('div');meta.className='meta';meta.textContent=c.phone||'Nomor tidak tersedia';info.append(nm,meta);const badge=document.createElement('span');badge.className='status'+(sent?' sent':'');badge.textContent=sent?'Terkirim':'Belum dikirim';top.append(info,badge);const actions=document.createElement('div');actions.className='actions';const send=document.createElement('button');send.textContent=sent?'Kirim ulang':'Kirim WhatsApp';send.disabled=!c.phone||!c.message;send.addEventListener('click',()=>openWhatsApp(c));const preview=document.createElement('button');preview.className='secondary';preview.textContent='Lihat pesan';preview.addEventListener('click',()=>showPreview(c));const mark=document.createElement('button');mark.className='secondary';mark.textContent=sent?'Batalkan status':'Tandai terkirim';mark.addEventListener('click',()=>{if(sent)delete statuses[key(c)];else statuses[key(c)]='sent';save();render();updateStats()});actions.append(send,preview,mark);el.append(top,actions);$('contactList').append(el)})}
+list.forEach(c=>{const sent=isSent(c),el=document.createElement('article');el.className='contact';const top=document.createElement('div');top.className='contact-top';const info=document.createElement('div');const nm=document.createElement('div');nm.className='name';nm.textContent=c.name||'(Tanpa nama)';const meta=document.createElement('div');meta.className='meta';meta.textContent=(c.phone||'Nomor tidak tersedia')+(c.instagram?' · @'+c.instagram:'');info.append(nm,meta);const badge=document.createElement('span');badge.className='status'+(sent?' sent':'');badge.textContent=sent?'Terkirim':'Belum dikirim';top.append(info,badge);const actions=document.createElement('div');actions.className='actions';const send=document.createElement('button');send.textContent=sent?'Kirim ulang':'Kirim WhatsApp';send.disabled=!c.phone||!c.message;send.addEventListener('click',()=>openWhatsApp(c));
+const ig=document.createElement('button');ig.className='secondary';ig.textContent='DM Instagram';ig.disabled=!c.instagram;ig.addEventListener('click',()=>openInstagram(c));
+const preview=document.createElement('button');preview.className='secondary';preview.textContent='Lihat pesan';preview.addEventListener('click',()=>showPreview(c));const mark=document.createElement('button');mark.className='secondary';mark.textContent=sent?'Batalkan status':'Tandai terkirim';mark.addEventListener('click',()=>{if(sent)delete statuses[key(c)];else statuses[key(c)]='sent';save();render();updateStats()});actions.append(send,ig,preview,mark);el.append(top,actions);$('contactList').append(el)})}
 function showPreview(c){selected=c;$('previewPanel').hidden=false;$('previewName').textContent=c.name+' · '+c.phone;$('messagePreview').textContent=c.message;$('previewPanel').scrollIntoView({behavior:'smooth',block:'start'})}
 function openWhatsApp(c){if(!c.phone||!c.message)return;window.location.href='https://wa.me/'+c.phone+'?text='+encodeURIComponent(c.message)}
+function openInstagram(c){if(!c.instagram)return;window.location.href='https://ig.me/m/'+encodeURIComponent(c.instagram)}
 function saveContacts(){
 try{
 localStorage.setItem(contactsStorageKey,JSON.stringify(contacts));
@@ -113,6 +117,7 @@ $('addContactBtn').addEventListener('click',()=>{
 $('addPanel').hidden=false;
 $('newName').value='';
 $('newPhone').value='';
+$('newInstagram').value='';
 $('addPanel').scrollIntoView({behavior:'smooth',block:'start'});
 $('newName').focus();
 });
@@ -120,13 +125,14 @@ $('cancelAddBtn').addEventListener('click',()=>{$('addPanel').hidden=true});
 $('saveContactBtn').addEventListener('click',()=>{
 const name=$('newName').value.trim();
 let phone=$('newPhone').value.replace(/\D/g,'');
+let instagram=$('newInstagram').value.trim().replace(/^@/,'').replace(/\s/g,'');
 if(phone.startsWith('0')) phone='62'+phone.slice(1);
 if(!name){alert('Nama kontak belum diisi.');return}
 if(!phone){alert('Nomor WhatsApp belum diisi.');return}
 if(phone.length<10){alert('Nomor WhatsApp terlalu pendek.');return}
 const exists=contacts[activeList].some(c=>c.name.trim().toLowerCase()===name.toLowerCase()&&c.phone===phone);
 if(exists){alert('Kontak dengan nama dan nomor tersebut sudah ada.');return}
-const nc={list:activeList,name,phone,message:makeMessage(name,'NAMA')};
+const nc={list:activeList,name,phone,instagram,message:makeMessage(name,'NAMA')};
 contacts[activeList].push(nc);
 saveContacts();
 $('addPanel').hidden=true;
