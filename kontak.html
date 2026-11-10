@@ -23,7 +23,7 @@ button:disabled{opacity:.4;cursor:not-allowed}.secondary{background:var(--soft);
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}input[type=search]{flex:1;min-width:150px;border:1px solid var(--line);border-radius:11px;padding:11px 12px;font-size:14px;background:#fff}
 .progress{height:7px;background:#eeeee8;border-radius:20px;overflow:hidden;margin-top:12px}.progress>div{height:100%;background:var(--green);width:0}
 .contact{border:1px solid var(--line);border-radius:13px;padding:13px;margin:9px 0;background:#fff}
-.contact-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.name{font-weight:750;font-size:14px}.meta{font-size:11px;color:var(--muted);margin-top:4px}
+.contact-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.name{font-weight:750;font-size:14px}.meta{font-size:11px;color:var(--muted);margin-top:4px}.contact-data{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.data-box{background:#f8f8f4;border:1px solid var(--line);border-radius:9px;padding:8px}.data-label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px}.data-value{font-size:11px;word-break:break-word}
 .status{font-size:10px;border-radius:30px;padding:5px 8px;background:#f0efe9;color:#777}.status.sent{background:#e8f1e5;color:#41633b}.status.skip{background:#f6e9e6;color:#9c5145}
 .actions{display:flex;gap:8px;margin-top:12px}.actions button{flex:1;padding:11px 8px}.actions .secondary{flex:0 0 auto}
 .empty{text-align:center;padding:24px 10px;color:var(--muted);font-size:13px}
@@ -41,7 +41,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 <p class="hint">Data kontak sudah tersimpan langsung di halaman ini. Tidak perlu upload Excel dan bisa dibuka dari HP lain.</p>
 <div class="stats"><div class="stat"><strong id="totalCount">0</strong><span>Kontak</span></div><div class="stat"><strong id="sentCount">0</strong><span>Terkirim</span></div><div class="stat"><strong id="remainingCount">0</strong><span>Belum dikirim</span></div></div>
 <div class="progress"><div id="progressBar"></div></div>
-<div class="notice">WhatsApp pribadi tetap mengharuskan kamu menekan tombol <b>Kirim</b> di WhatsApp. Halaman ini hanya membuka chat dengan pesan personal yang sudah terisi.</div>
+<div class="notice">WhatsApp pribadi tetap mengharuskan kamu menekan tombol <b>Kirim</b> di WhatsApp. Untuk Instagram, halaman akan membuka DM akun tujuan dan menyalin pesan personal agar tinggal ditempel. Instagram tidak menyediakan cara resmi dari tautan web untuk mengisi kolom DM secara otomatis.</div>
 </section>
 <section class="panel">
 <h2>2. Pilih daftar dan kirim</h2>
@@ -60,7 +60,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px}
 <button id="cancelAddBtn" class="secondary">Batal</button>
 </div>
 </div>
-<p class="hint">Kontak baru disimpan di browser HP ini, jadi tidak hilang saat halaman di-reload. Data yang sudah berstatus <b>Terkirim</b> tetap dipertahankan.</p>
+<p class="hint">Nomor WhatsApp dan username Instagram tidak wajib diisi bersamaan. Isi minimal salah satunya. Kontak baru disimpan di browser HP ini, jadi tidak hilang saat halaman di-reload. Data yang sudah berstatus <b>Terkirim</b> tetap dipertahankan.</p>
 </section>
 <section class="panel" id="previewPanel" hidden>
 <h2>Pratinjau pesan</h2>
@@ -102,12 +102,12 @@ function updateStats(){const all=[...contacts.YHOLA,...contacts.ARDAN],sent=all.
 function render(){
 const q=$('searchInput').value.toLowerCase(),list=contacts[activeList].filter(c=>(c.name+' '+c.phone).toLowerCase().includes(q));$('contactList').innerHTML='';
 if(!list.length){$('contactList').innerHTML='<div class="empty">'+(contacts[activeList].length?'Kontak tidak ditemukan.':'Tidak ada kontak pada daftar ini.')+'</div>';return}
-list.forEach(c=>{const sent=isSent(c),el=document.createElement('article');el.className='contact';const top=document.createElement('div');top.className='contact-top';const info=document.createElement('div');const nm=document.createElement('div');nm.className='name';nm.textContent=c.name||'(Tanpa nama)';const meta=document.createElement('div');meta.className='meta';meta.textContent=(c.phone||'Nomor tidak tersedia')+(c.instagram?' · @'+c.instagram:'');info.append(nm,meta);const badge=document.createElement('span');badge.className='status'+(sent?' sent':'');badge.textContent=sent?'Terkirim':'Belum dikirim';top.append(info,badge);const actions=document.createElement('div');actions.className='actions';const send=document.createElement('button');send.textContent=sent?'Kirim ulang':'Kirim WhatsApp';send.disabled=!c.phone||!c.message;send.addEventListener('click',()=>openWhatsApp(c));
-const ig=document.createElement('button');ig.className='secondary';ig.textContent='DM Instagram';ig.disabled=!c.instagram;ig.addEventListener('click',()=>openInstagram(c));
+list.forEach(c=>{const sent=isSent(c),el=document.createElement('article');el.className='contact';const top=document.createElement('div');top.className='contact-top';const info=document.createElement('div');const nm=document.createElement('div');nm.className='name';nm.textContent=c.name||'(Tanpa nama)';const meta=document.createElement('div');meta.className='contact-data';const waBox=document.createElement('div');waBox.className='data-box';waBox.innerHTML='<span class="data-label">WhatsApp</span><span class="data-value">'+(c.phone||'—')+'</span>';const igBox=document.createElement('div');igBox.className='data-box';igBox.innerHTML='<span class="data-label">Instagram</span><span class="data-value">'+(c.instagram?'@'+c.instagram:'—')+'</span>';meta.append(waBox,igBox);info.append(nm,meta);const badge=document.createElement('span');badge.className='status'+(sent?' sent':'');badge.textContent=sent?'Terkirim':'Belum dikirim';top.append(info,badge);const actions=document.createElement('div');actions.className='actions';const send=document.createElement('button');send.textContent=sent?'Kirim ulang':'Kirim WhatsApp';send.disabled=!c.phone||!c.message;send.addEventListener('click',()=>openWhatsApp(c));
+const ig=document.createElement('button');ig.className='secondary';ig.textContent=c.instagram?'DM Instagram':'Instagram belum diisi';ig.disabled=!c.instagram;ig.addEventListener('click',()=>openInstagram(c));
 const preview=document.createElement('button');preview.className='secondary';preview.textContent='Lihat pesan';preview.addEventListener('click',()=>showPreview(c));const mark=document.createElement('button');mark.className='secondary';mark.textContent=sent?'Batalkan status':'Tandai terkirim';mark.addEventListener('click',()=>{if(sent)delete statuses[key(c)];else statuses[key(c)]='sent';save();render();updateStats()});actions.append(send,ig,preview,mark);el.append(top,actions);$('contactList').append(el)})}
 function showPreview(c){selected=c;$('previewPanel').hidden=false;$('previewName').textContent=c.name+' · '+c.phone;$('messagePreview').textContent=c.message;$('previewPanel').scrollIntoView({behavior:'smooth',block:'start'})}
 function openWhatsApp(c){if(!c.phone||!c.message)return;window.location.href='https://wa.me/'+c.phone+'?text='+encodeURIComponent(c.message)}
-function openInstagram(c){if(!c.instagram)return;window.location.href='https://ig.me/m/'+encodeURIComponent(c.instagram)}
+async function openInstagram(c){if(!c.instagram)return;try{await navigator.clipboard.writeText(c.message);alert('Pesan undangan untuk '+c.name+' sudah disalin. Tempelkan di kolom DM Instagram.');}catch(e){}window.location.href='https://ig.me/m/'+encodeURIComponent(c.instagram)}
 function saveContacts(){
 try{
 localStorage.setItem(contactsStorageKey,JSON.stringify(contacts));
@@ -128,9 +128,9 @@ let phone=$('newPhone').value.replace(/\D/g,'');
 let instagram=$('newInstagram').value.trim().replace(/^@/,'').replace(/\s/g,'');
 if(phone.startsWith('0')) phone='62'+phone.slice(1);
 if(!name){alert('Nama kontak belum diisi.');return}
-if(!phone){alert('Nomor WhatsApp belum diisi.');return}
-if(phone.length<10){alert('Nomor WhatsApp terlalu pendek.');return}
-const exists=contacts[activeList].some(c=>c.name.trim().toLowerCase()===name.toLowerCase()&&c.phone===phone);
+if(!phone && !instagram){alert('Isi minimal Nomor WhatsApp atau Username Instagram.');return}
+if(phone && phone.length<10){alert('Nomor WhatsApp terlalu pendek.');return}
+const exists=contacts[activeList].some(c=>c.name.trim().toLowerCase()===name.toLowerCase()&&c.phone===phone&&c.instagram===instagram);
 if(exists){alert('Kontak dengan nama dan nomor tersebut sudah ada.');return}
 const nc={list:activeList,name,phone,instagram,message:makeMessage(name,'NAMA')};
 contacts[activeList].push(nc);
