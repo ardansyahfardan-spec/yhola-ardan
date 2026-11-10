@@ -107,7 +107,29 @@ const ig=document.createElement('button');ig.className='secondary';ig.textConten
 const preview=document.createElement('button');preview.className='secondary';preview.textContent='Lihat pesan';preview.addEventListener('click',()=>showPreview(c));const mark=document.createElement('button');mark.className='secondary';mark.textContent=sent?'Batalkan status':'Tandai terkirim';mark.addEventListener('click',()=>{if(sent)delete statuses[key(c)];else statuses[key(c)]='sent';save();render();updateStats()});actions.append(send,ig,preview,mark);el.append(top,actions);$('contactList').append(el)})}
 function showPreview(c){selected=c;$('previewPanel').hidden=false;$('previewName').textContent=c.name+' · '+c.phone;$('messagePreview').textContent=c.message;$('previewPanel').scrollIntoView({behavior:'smooth',block:'start'})}
 function openWhatsApp(c){if(!c.phone||!c.message)return;window.location.href='https://wa.me/'+c.phone+'?text='+encodeURIComponent(c.message)}
-async function openInstagram(c){if(!c.instagram)return;try{await navigator.clipboard.writeText(c.message);alert('Pesan undangan untuk '+c.name+' sudah disalin. Tempelkan di kolom DM Instagram.');}catch(e){}window.location.href='https://ig.me/m/'+encodeURIComponent(c.instagram)}
+async function openInstagram(c){
+if(!c.instagram)return;
+let copied=false;
+try{
+ await navigator.clipboard.writeText(c.message);
+ copied=true;
+}catch(e){
+ try{
+  const ta=document.createElement('textarea');
+  ta.value=c.message;
+  ta.style.position='fixed';ta.style.left='-9999px';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  copied=document.execCommand('copy');
+  ta.remove();
+ }catch(err){}
+}
+if(copied){
+ alert('Pesan untuk '+c.name+' sudah disalin. Setelah DM Instagram terbuka, tekan lama di kolom chat lalu pilih Tempel.');
+}else{
+ alert('Pesan untuk '+c.name+':\\n\\n'+c.message+'\\n\\nSalin pesan ini lalu buka DM Instagram.');
+}
+window.location.href='https://ig.me/m/'+encodeURIComponent(c.instagram);
+}
 function saveContacts(){
 try{
 localStorage.setItem(contactsStorageKey,JSON.stringify(contacts));
