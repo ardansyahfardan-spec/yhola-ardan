@@ -1,17 +1,20 @@
 /**
  * BUKU SUMBANGAN ARDAN & YHOLA
- * Backend keuangan terpisah dari RSVP/UCAPAN.
- * PENTING: gunakan SPREADSHEET_ID yang sudah ada. Jangan jalankan setup()
- * lagi; fungsi ensureStructure_() akan menambah struktur yang diperlukan.
+ * Backend memakai spreadsheet baru dengan 5 tab kategori.
+ * Tidak menyentuh spreadsheet undangan RSVP/UCAPAN atau spreadsheet lama.
  */
-const SHEET_NAME = 'Sumbangan';
-const HISTORY_SHEET_NAME = 'Riwayat';
+const SPREADSHEET_ID = '10-GRpHrEzhJPpcPw2A4OqY49I-YepTXsCs-6E2qOutQ';
+const CATEGORIES = ['Amplop', 'BCA Ardan', 'BCA Yhola', 'Mandiri Yhola', 'Kado'];
+const HISTORY_SHEET = 'Riwayat';
+const HEADER_ROW = 4;
+const FIRST_DATA_ROW = 5;
+const ID_COL = 6;
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
-  const callback = String(p.callback || '');
   let result;
   try {
+    ensureSummaryFormulas_();
     const action = String(p.action || 'list');
     if (action === 'list') result = { ok: true, data: readRows_() };
     else if (action === 'history') result = { ok: true, data: readHistory_() };
@@ -20,9 +23,14 @@ function doGet(e) {
     else if (action === 'delete') result = { ok: true, data: deleteRow_(p.id) };
     else result = { ok: false, error: 'Aksi tidak dikenal.' };
   } catch (err) {
-    result = { ok: false, error: String(err.message || err) };
+    result = { ok: false, error: String(err && err.message || err) };
   }
+  return output_(result, p.callback);
+}
+
+function output_(result, callback) {
   const json = JSON.stringify(result);
+  callback = String(callback || '');
   if (callback && /^[a-zA-Z_$][0-9a-zA-Z_$\\.]*$/.test(callback)) {
     return ContentService.createTextOutput(callback + '(' + json + ');')
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
@@ -31,121 +39,167 @@ function doGet(e) {
 }
 
 function spreadsheet_() {
-  const id = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
-  if (!id) throw new Error('SPREADSHEET_ID belum ditemukan. Jangan buat spreadsheet baru; periksa project Apps Script yang digunakan.');
-  return SpreadsheetApp.openById(id);
+  return SpreadsheetApp.openById(SPREADSHEET_ID);
 }
 
-function sheet_() {
+function ensureSummaryFormulas_() {
   const ss = spreadsheet_();
-  let s = ss.getSheetByName(SHEET_NAME);
-  if (!s) throw new Error('Sheet Sumbangan tidak ditemukan. Data lama tidak diubah.');
-  const headers = ['ID', 'Nama', 'Jumlah', 'Tamu Dari', 'Dibuat Pada', 'Diperbarui Pada', 'Jenis Sumbangan', 'Isi Kado'];
-  const current = s.getRange(1, 1, 1, Math.max(s.getLastColumn(), 1)).getValues()[0].map(String);
-  headers.forEach((h, i) => {
-    if (current.indexOf(h) === -1) {
-      const emptyCol = current.findIndex(v => !v);
-      const col = emptyCol >= 0 ? emptyCol + 1 : s.getLastColumn() + 1;
-      s.getRange(1, col).setValue(h);
-      current[col - 1] = h;
-    }
+  const summary = ss.getSheetByName('Rekap Utama');
+  if (!summary) throw new Error('Tab Rekap Utama tidak ditemukan. Pastikan memakai spreadsheet template yang baru.');
+  CATEGORIES.forEach((category, i) => {
+    const row = 5 + i;
+    summary.getRange(row, 2).setFormula("=COUNTA('" + category + "'!B5:B1004)");
+    summary.getRange(row, 3).setFormula(category === 'Kado' ? '=0' : "=SUM('" + category + "'!D5:D1004)");
   });
-  return s;
+  summary.getRange('B11').setFormula('=SUM(B5:B9)');
+  summary.getRange('C11').setFormula('=SUM(C5:C9)');
+  summary.getRange('B13').setFormula("=COUNTA('Kado'!B5:B1004)");
+}
+
+function categorySheet_(category) {
+  if (CATEGORIES.indexOf(category) === -1) throw new Error('Kategori tidak valid: ' + category);
+  const sh = spreadsheet_().getSheetByName(category);
+  if (!sh) throw new Error('Tab ' + category + ' tidak ditemukan.');
+  if (!String(sh.getRange(HEADER_ROW, ID_COL).getValue() || '').trim()) {
+    sh.getRange(HEADER_ROW, ID_COL).setValue('ID');
+    sh.hideColumns(ID_COL);
+  }
+  return sh;
+}
+
+function getRecordRows_(sh) {
+  const last = Math.max(sh.getLastRow(), FIRST_DATA_ROW - 1);
+  if (last < FIRST_DATA_ROW) return [];
+  return sh.getRange(FIRST_DATA_ROW, 1, last - FIRST_DATA_ROW + 1, ID_COL).getValues();
+}
+
+function readRows_() {
+  const result = [];
+  CATEGORIES.forEach(category => {
+    const sh = categorySheet_(category);
+    getRecordRows_(sh).forEach((r, i) => {
+      const id = String(r[5] || '');
+      const name = String(r[1] || '');
+      if (!id || !name) return;
+      const isGift = category === 'Kado';
+      const date = r[0] instanceof Date ? r[0] : (r[0] ? new Date(r[0]) : null);
+      result.push({
+        id: id,
+        name: name,
+        source: String(r[2] || ''),
+        type: category,
+        amount: isGift ? 0 : Number(r[3] || 0),
+        giftDescription: isGift ? String(r[3] || '') : '',
+        note: String(r[4] || ''),
+        createdAt: date && !isNaN(date.getTime()) ? date.toISOString() : '',
+        updatedAt: ''
+      });
+    });
+  });
+  return result.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
 }
 
 function historySheet_() {
   const ss = spreadsheet_();
-  let h = ss.getSheetByName(HISTORY_SHEET_NAME);
-  if (!h) {
-    h = ss.insertSheet(HISTORY_SHEET_NAME);
-    h.appendRow(['Waktu', 'Aksi', 'ID Catatan', 'Nama', 'Detail']);
-    h.setFrozenRows(1);
-    h.getRange(1, 1, 1, 5).setFontWeight('bold').setBackground('#F3EBDD');
+  let sh = ss.getSheetByName(HISTORY_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(HISTORY_SHEET);
+    sh.appendRow(['Waktu', 'Aksi', 'ID Catatan', 'Nama', 'Detail']);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 5).setFontWeight('bold').setBackground('#F3EBDD');
   }
-  return h;
+  return sh;
 }
 
 function logHistory_(action, item, detail) {
-  historySheet_().appendRow([new Date(), action, String(item.id || ''), String(item.name || ''), detail || '']);
-}
-
-function readRows_() {
-  const s = sheet_(), values = s.getDataRange().getValues();
-  const headers = values[0].map(String), col = name => headers.indexOf(name);
-  return values.slice(1).filter(r => r[col('ID')] !== '' && r[col('ID')] != null).map(r => ({
-    id: String(r[col('ID')]), name: String(r[col('Nama')] || ''),
-    amount: Number(r[col('Jumlah')] || 0), source: String(r[col('Tamu Dari')] || ''),
-    createdAt: r[col('Dibuat Pada')] ? new Date(r[col('Dibuat Pada')]).toISOString() : '',
-    updatedAt: r[col('Diperbarui Pada')] ? new Date(r[col('Diperbarui Pada')]).toISOString() : '',
-    type: String(r[col('Jenis Sumbangan')] || 'Belum dikategorikan'),
-    giftDescription: String(r[col('Isi Kado')] || '')
-  }));
+  historySheet_().appendRow([new Date(), action, item.id || '', item.name || '', detail || '']);
 }
 
 function readHistory_() {
-  const h = historySheet_(), values = h.getDataRange().getValues();
-  return values.slice(1).reverse().slice(0, 100).map(r => ({
+  const sh = historySheet_();
+  const last = sh.getLastRow();
+  if (last < 2) return [];
+  return sh.getRange(2, 1, last - 1, 5).getValues().reverse().slice(0, 100).map(r => ({
     timestamp: r[0] ? new Date(r[0]).toISOString() : '',
-    action: String(r[1] || ''), id: String(r[2] || ''),
-    name: String(r[3] || ''), detail: String(r[4] || '')
+    action: String(r[1] || ''),
+    id: String(r[2] || ''),
+    name: String(r[3] || ''),
+    detail: String(r[4] || '')
   }));
 }
 
+function normalizeItem_(p) {
+  const type = String(p.type || 'Amplop').trim();
+  const name = String(p.name || '').trim();
+  const source = String(p.source || '').trim();
+  const giftDescription = String(p.giftDescription || '').trim();
+  const amount = type === 'Kado' ? 0 : Number(p.amount);
+  if (CATEGORIES.indexOf(type) < 0) throw new Error('Pilih jenis sumbangan yang tersedia.');
+  if (!name || !source) throw new Error('Nama dan asal tamu wajib diisi.');
+  if (type === 'Kado' ? !giftDescription : (!Number.isFinite(amount) || amount <= 0)) {
+    throw new Error(type === 'Kado' ? 'Isi kado wajib diisi.' : 'Jumlah sumbangan harus lebih dari nol.');
+  }
+  return { id: String(p.id || Utilities.getUuid()), name, source, type, amount, giftDescription, note: String(p.note || '').trim() };
+}
+
+function appendRecord_(item, dateValue) {
+  const sh = categorySheet_(item.type);
+  const last = Math.max(sh.getLastRow(), FIRST_DATA_ROW - 1);
+  const row = Math.max(FIRST_DATA_ROW, last + 1);
+  const detail = item.type === 'Kado' ? item.giftDescription : item.amount;
+  sh.getRange(row, 1, 1, ID_COL).setValues([[
+    dateValue || new Date(), item.name, item.source, detail, item.note || '', item.id
+  ]]);
+  if (item.type !== 'Kado') sh.getRange(row, 4).setNumberFormat('"Rp" #,##0');
+  return row;
+}
+
+function findRecord_(id) {
+  for (const category of CATEGORIES) {
+    const sh = categorySheet_(category);
+    const rows = getRecordRows_(sh);
+    for (let i = 0; i < rows.length; i++) {
+      if (String(rows[i][5] || '') === String(id)) {
+        return { sheet: sh, row: FIRST_DATA_ROW + i, category, values: rows[i] };
+      }
+    }
+  }
+  return null;
+}
+
 function addRow_(p) {
-  const name = String(p.name || '').trim(), source = String(p.source || '').trim();
-  const type = String(p.type || 'Amplop').trim(), giftDescription = String(p.giftDescription || '').trim();
-  const isGift = type === 'Kado', amount = isGift ? 0 : Number(p.amount);
-  if (!name || !source || (isGift ? !giftDescription : (!Number.isFinite(amount) || amount <= 0))) throw new Error('Nama, asal tamu, serta jumlah atau isi kado wajib diisi.');
-  const id = Utilities.getUuid(), now = new Date();
-  const item = { id, name, amount, source, type, giftDescription };
-  const s = sheet_(), headers = s.getRange(1, 1, 1, s.getLastColumn()).getValues()[0].map(String);
-  const row = headers.map(h => ({
-    'ID': id, 'Nama': name, 'Jumlah': amount, 'Tamu Dari': source,
-    'Dibuat Pada': now, 'Diperbarui Pada': now,
-    'Jenis Sumbangan': type, 'Isi Kado': giftDescription
-  }[h] !== undefined ? ({
-    'ID': id, 'Nama': name, 'Jumlah': amount, 'Tamu Dari': source,
-    'Dibuat Pada': now, 'Diperbarui Pada': now,
-    'Jenis Sumbangan': type, 'Isi Kado': giftDescription
-  }[h]) : ''));
-  s.appendRow(row);
-  logHistory_('Tambah', item, type === 'Kado' ? 'Kado: ' + giftDescription : type + ' · Rp ' + amount);
-  item.createdAt = now.toISOString(); item.updatedAt = now.toISOString();
+  const item = normalizeItem_(p);
+  const now = new Date();
+  appendRecord_(item, now);
+  logHistory_('Tambah', item, item.type === 'Kado' ? 'Kado: ' + item.giftDescription : item.type + ' · Rp ' + item.amount);
+  item.createdAt = now.toISOString();
   return item;
 }
 
 function updateRow_(p) {
-  const s = sheet_(), id = String(p.id || '');
-  const name = String(p.name || '').trim(), source = String(p.source || '').trim();
-  const type = String(p.type || 'Amplop').trim(), giftDescription = String(p.giftDescription || '').trim();
-  const isGift = type === 'Kado', amount = isGift ? 0 : Number(p.amount);
-  if (!id || !name || !source || (isGift ? !giftDescription : (!Number.isFinite(amount) || amount <= 0))) throw new Error('Data edit tidak lengkap.');
-  const values = s.getDataRange().getValues(), headers = values[0].map(String);
-  for (let i = 1; i < values.length; i++) if (String(values[i][headers.indexOf('ID')]) === id) {
-    const oldName = String(values[i][headers.indexOf('Nama')] || '');
-    const oldType = String(values[i][headers.indexOf('Jenis Sumbangan')] || 'Belum dikategorikan');
-    const oldAmount = Number(values[i][headers.indexOf('Jumlah')] || 0);
-    const now = new Date(), item = { id, name, amount, source, type, giftDescription };
-    const updates = {
-      'Nama': name, 'Jumlah': amount, 'Tamu Dari': source,
-      'Diperbarui Pada': now, 'Jenis Sumbangan': type, 'Isi Kado': giftDescription
-    };
-    Object.keys(updates).forEach(key => s.getRange(i + 1, headers.indexOf(key) + 1).setValue(updates[key]));
-    logHistory_('Edit', item, 'Sebelumnya: ' + oldName + ' · ' + oldType + ' · Rp ' + oldAmount + ' → Sekarang: ' + type + (isGift ? ' · ' + giftDescription : ' · Rp ' + amount));
-    item.updatedAt = now.toISOString();
-    return item;
-  }
-  throw new Error('Catatan tidak ditemukan.');
+  const item = normalizeItem_(p);
+  if (!p.id) throw new Error('ID catatan tidak ditemukan.');
+  const old = findRecord_(item.id);
+  if (!old) throw new Error('Catatan tidak ditemukan.');
+  const oldName = String(old.values[1] || '');
+  const oldCategory = old.category;
+  const oldDetail = old.category === 'Kado' ? String(old.values[3] || '') : 'Rp ' + Number(old.values[3] || 0);
+  const oldDate = old.values[0] || new Date();
+  old.sheet.deleteRow(old.row);
+  appendRecord_(item, oldDate);
+  logHistory_('Edit', item, 'Sebelumnya: ' + oldName + ' · ' + oldCategory + ' · ' + oldDetail + ' → Sekarang: ' + item.type + (item.type === 'Kado' ? ' · ' + item.giftDescription : ' · Rp ' + item.amount));
+  item.createdAt = oldDate instanceof Date ? oldDate.toISOString() : '';
+  item.updatedAt = new Date().toISOString();
+  return item;
 }
 
 function deleteRow_(id) {
-  const s = sheet_(), values = s.getDataRange().getValues(), headers = values[0].map(String);
-  for (let i = 1; i < values.length; i++) if (String(values[i][headers.indexOf('ID')]) === String(id)) {
-    const item = { id: String(id), name: String(values[i][headers.indexOf('Nama')] || '') };
-    const detail = String(values[i][headers.indexOf('Jenis Sumbangan')] || '') + ' · ' + String(values[i][headers.indexOf('Tamu Dari')] || '');
-    logHistory_('Hapus', item, detail);
-    s.deleteRow(i + 1);
-    return { id: String(id) };
-  }
-  throw new Error('Catatan tidak ditemukan.');
+  if (!id) throw new Error('ID catatan tidak ditemukan.');
+  const old = findRecord_(id);
+  if (!old) throw new Error('Catatan tidak ditemukan.');
+  const item = { id: String(id), name: String(old.values[1] || '') };
+  const detail = old.category + ' · ' + String(old.values[2] || '');
+  logHistory_('Hapus', item, detail);
+  old.sheet.deleteRow(old.row);
+  return { id: String(id) };
 }
