@@ -10,6 +10,7 @@ label{display:block;font-size:11px;letter-spacing:.04em;font-weight:700;color:#7
 <header class="head"><div class="brand"><div class="mark">♡</div><div><div class="eyebrow">WEDDING FINANCE</div><h1>Buku Sumbangan</h1></div></div><span class="muted">Ardan & Yhola · Catatan pernikahan</span></header>
 <section class="hero"><div class="eyebrow">TOTAL SUMBANGAN MASUK</div><h2>Akumulasi seluruh pemberian</h2><p class="total" id="total">Rp 0</p><div class="muted" style="color:#e0eae3" id="summary">Belum ada catatan sumbangan</div></section>
 <section class="stats"><div class="stat"><span>Total penyumbang</span><strong id="count">0 orang</strong></div><div class="stat"><span>Rata-rata sumbangan</span><strong id="avg">Rp 0</strong></div><div class="stat"><span>Asal tamu</span><strong id="groups">0 kategori</strong></div></section>
+<section class="panel" style="margin:0 0 16px"><div class="bar"><div><h3>Unduh laporan</h3><p class="sub" style="margin-bottom:0">Buat arsip dari data terbaru.</p></div><div class="tools" style="margin:0"><button class="btn soft" id="exportPdf" type="button">↓ Unduh PDF</button><button class="btn plain" id="exportExcel" type="button">↓ Unduh Excel</button></div></div><div class="muted">PDF untuk dibaca atau dicetak · Excel untuk diolah kembali.</div></section>
 <section class="breakdowns"><div class="breakdown"><h3>Rekap jenis sumbangan</h3><div id="categoryBreakdown" class="muted">Memuat rekap…</div></div><div class="breakdown"><h3>Rekap asal tamu</h3><div id="originBreakdown" class="muted">Memuat rekap…</div></div></section><main class="layout"><section class="panel"><h3 id="formTitle">Tambah sumbangan</h3><p class="sub">Masukkan informasi pemberi sumbangan.</p><form id="form"><input id="editId" type="hidden"><label for="name">Nama penyumbang</label><input id="name" maxlength="100" placeholder="Contoh: Budi Santoso" required><label for="giftType">Jenis sumbangan</label><select id="giftType" required><option value="Amplop">Amplop</option><option value="Mandiri Yhola">Mandiri Yhola</option><option value="BCA Yhola">BCA Yhola</option><option value="BCA Ardan">BCA Ardan</option><option value="Kado">Kado</option></select><div id="moneyField"><label for="amount">Jumlah sumbangan (Rp)</label><input id="amount" type="number" min="1" step="1" placeholder="Contoh: 500000"></div><div id="giftField" style="display:none"><label for="giftDescription">Isi kado / hadiah</label><input id="giftDescription" maxlength="160" placeholder="Contoh: Rice cooker, setrika, piring"></div><label for="source">Tamu dari</label><input id="source" list="sourcesList" maxlength="80" placeholder="Pilih atau ketik asal tamu" required><datalist id="sourcesList"><option>Kantor Bumindo</option><option>Kantor Erha</option><option>Keluarga Ardan</option><option>Keluarga Yhola</option><option>Teman Ardan</option><option>Teman Yhola</option><option>Tetangga</option><option>Lainnya</option></datalist><button class="btn primary" id="save">＋ Simpan sumbangan</button><button class="btn plain" id="cancel" type="button" style="display:none;width:100%;margin-top:8px">Batal edit</button></form><div class="note" id="connectionNote">Menghubungkan ke Google Spreadsheet…</div></section>
 <section class="panel"><div class="bar"><div><h3>Daftar sumbangan</h3><p class="sub" style="margin-bottom:0">Riwayat seluruh catatan.</p></div><input class="search" id="search" placeholder="Cari nama / asal tamu"></div><div class="tablebox"><table><thead><tr><th>Nama</th><th>Asal tamu</th><th>Jenis / keterangan</th><th style="text-align:right">Jumlah</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody id="rows"></tbody></table><div class="empty" id="empty">Belum ada data sumbangan.</div></div></section></main><section class="panel history"><div class="bar"><div><h3>Riwayat perubahan</h3><p class="sub" style="margin-bottom:0">100 aktivitas terakhir · tambah, edit, dan hapus.</p></div><button class="btn soft" id="refreshHistory" type="button">Muat ulang</button></div><div class="history-list" id="historyList"><div class="muted">Memuat riwayat…</div></div></section></div>
 <script>
@@ -40,6 +41,54 @@ $('form').onsubmit=async e=>{e.preventDefault();const id=$('editId').value,type=
 function reset(){$('form').reset();$('editId').value='';$('formTitle').textContent='Tambah sumbangan';$('save').textContent='＋ Simpan sumbangan';$('cancel').style.display='none';syncGiftFields()}
 window.editRow=id=>{let x=data.find(v=>v.id===id);if(!x)return;$('editId').value=id;$('name').value=x.name;$('giftType').value=x.type||'Amplop';$('amount').value=x.amount||'';$('giftDescription').value=x.giftDescription||'';$('source').value=x.source;syncGiftFields();$('formTitle').textContent='Edit sumbangan';$('save').textContent='Simpan perubahan';$('cancel').style.display='block';window.scrollTo({top:0,behavior:'smooth'})};
 window.removeRow=async id=>{let x=data.find(v=>v.id===id);if(x&&confirm('Hapus catatan '+x.name+'?')){try{await api({action:'delete',id});await loadData();if($('editId').value===id)reset()}catch(err){alert('Gagal menghapus: '+err.message)}}};
+
+function exportRows(){
+ return data.slice().sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)).map((x,i)=>({
+  'No.':i+1,'Tanggal':x.createdAt?new Date(x.createdAt):'',
+  'Nama Pemberi':x.name,'Tamu Dari':x.source,'Jenis Sumbangan':x.type,
+  'Jumlah (Rp)':x.type==='Kado'?'':Number(x.amount||0),
+  'Isi Kado/Hadiah':x.type==='Kado'?(x.giftDescription||''):''
+ }));
+}
+function exportSummary(){
+ const money=data.filter(x=>x.type!=='Kado');
+ const total=money.reduce((n,x)=>n+Number(x.amount||0),0);
+ const rows=[['LAPORAN SUMBANGAN ARDAN & YHOLA'],['Tanggal laporan',new Date()],['Total penerimaan uang',total],['Jumlah catatan',data.length],['Jumlah kado',data.filter(x=>x.type==='Kado').length],[],['Rekap jenis','Nilai / jumlah']];
+ const groups={};data.forEach(x=>groups[x.type]=(groups[x.type]||0)+(x.type==='Kado'?1:Number(x.amount||0)));
+ Object.entries(groups).forEach(([k,v])=>rows.push([k,k==='Kado'?v+' hadiah':v]));
+ rows.push([],['Rekap asal tamu','Jumlah pemberi']);
+ const origins={};data.forEach(x=>origins[x.source]=(origins[x.source]||0)+1);
+ Object.entries(origins).forEach(([k,v])=>rows.push([k,v]));
+ return rows;
+}
+function exportPdf(){
+ if(!data.length){alert('Belum ada data untuk dibuat laporan.');return}
+ const w=window.open('','_blank');if(!w){alert('Izinkan pop-up untuk membuat PDF.');return}
+ const money=data.filter(x=>x.type!=='Kado'),total=money.reduce((n,x)=>n+Number(x.amount||0),0);
+ const group=(key)=>{const o={};data.forEach(x=>o[x[key]]=(o[x[key]]||0)+(key==='type'?(x.type==='Kado'?1:Number(x.amount||0)):1));return Object.entries(o).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+(key==='type'&&k!=='Kado'?fmt(v):key==='type'?v+' hadiah':v+' pemberi')+'</td></tr>').join('')};
+ const rows=exportRows().map(x=>'<tr><td>'+x['No.']+'</td><td>'+esc(x['Nama Pemberi'])+'</td><td>'+esc(x['Tamu Dari'])+'</td><td>'+esc(x['Jenis Sumbangan'])+'</td><td>'+(x['Jenis Sumbangan']==='Kado'?esc(x['Isi Kado/Hadiah']):fmt(x['Jumlah (Rp)']))+'</td><td>'+esc(dateFmt(x['Tanggal']))+'</td></tr>').join('');
+ w.document.write('<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Laporan Sumbangan</title><style>@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font:11px Arial;color:#302d25}h1{text-align:center;font:26px Georgia;color:#8f7443;margin:0}h2{font:17px Georgia;color:#8f7443;margin:20px 0 8px}.sub{text-align:center;color:#887b63;letter-spacing:1.5px;margin:7px 0 20px}.hero{background:#f5f0e6;border:1px solid #d8c69f;padding:18px;text-align:center}.hero small{color:#8f7443}.total{font:28px Georgia;color:#72562d;margin:8px}table{width:100%;border-collapse:collapse;margin:8px 0 16px}th{background:#f3ecdc;color:#725b32;text-align:left}th,td{border:1px solid #e8e0d2;padding:7px;font-size:9px}td:last-child{text-align:right}.foot{text-align:center;color:#887b63;margin-top:24px;font:italic 10px Georgia}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><h1>ARDAN & YHOLA</h1><div class="sub">LAPORAN SUMBANGAN PERNIKAHAN · '+esc(new Intl.DateTimeFormat('id-ID',{dateStyle:'long'}).format(new Date()))+'</div><div class="hero"><small>TOTAL PENERIMAAN UANG</small><div class="total">'+fmt(total)+'</div>'+data.length+' catatan · '+data.filter(x=>x.type==='Kado').length+' kado</div><h2>Rekap jenis sumbangan</h2><table><thead><tr><th>Jenis</th><th>Nilai / jumlah</th></tr></thead><tbody>'+group('type')+'</tbody></table><h2>Rekap asal tamu</h2><table><thead><tr><th>Asal tamu</th><th>Jumlah</th></tr></thead><tbody>'+group('source')+'</tbody></table><h2>Rincian seluruh catatan</h2><table><thead><tr><th>No.</th><th>Nama</th><th>Asal tamu</th><th>Jenis</th><th>Jumlah / isi kado</th><th>Tanggal</th></tr></thead><tbody>'+rows+'</tbody></table><div class="foot">Arsip pribadi · Buku Sumbangan Ardan & Yhola</div><script>window.onload=()=>setTimeout(()=>window.print(),500);<\/script></body></html>');
+ w.document.close();
+}
+function exportExcel(){
+ if(!data.length){alert('Belum ada data untuk diekspor.');return}
+ const run=()=>{
+  const wb=XLSX.utils.book_new();
+  const ws1=XLSX.utils.aoa_to_sheet(exportSummary());
+  const ws2=XLSX.utils.json_to_sheet(exportRows());
+  XLSX.utils.book_append_sheet(wb,ws1,'Rekap Utama');
+  XLSX.utils.book_append_sheet(wb,ws2,'Semua Data');
+  XLSX.writeFile(wb,'Laporan_Sumbangan_Ardan_Yhola.xlsx');
+ };
+ if(window.XLSX){run();return}
+ const script=document.createElement('script');
+ script.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+ script.onload=run;script.onerror=()=>alert('Gagal memuat pembuat Excel. Periksa koneksi internet lalu coba lagi.');
+ document.head.appendChild(script);
+}
+$('exportPdf').onclick=exportPdf;
+$('exportExcel').onclick=exportExcel;
+
 $('cancel').onclick=reset;$('search').oninput=render;$('refreshHistory').onclick=loadHistory;
 loadData();
 </script></body></html>
