@@ -30,7 +30,7 @@ function render(){
  $('categoryBreakdown').innerHTML=aggregate('type',true);
  $('originBreakdown').innerHTML=aggregate('source',false);
  let q=$('search').value.toLowerCase(),list=data.filter(x=>[x.name,x.source,x.type,x.giftDescription].some(v=>String(v||'').toLowerCase().includes(q)));
- $('rows').innerHTML=list.map(x=>{let desc=x.type==='Kado'?'Kado · '+(x.giftDescription||'Belum diisi'):(x.type||'Belum dikategorikan');let amount=x.type==='Kado'?'—':fmt(x.amount);return '<tr><td><b>'+esc(x.name)+'</b></td><td><span class="tag">'+esc(x.source)+'</span></td><td>'+esc(desc)+'</td><td class="money">'+amount+'</td><td>'+esc(dateFmt(x.createdAt))+'</td><td><button class="mini" onclick="editRow(\\''+x.id+'\\')">Edit</button><button class="mini del" onclick="removeRow(\\''+x.id+'\\')">Hapus</button></td></tr>'}).join('');
+ $('rows').innerHTML=list.map(x=>{let desc=x.type==='Kado'?'Kado · '+(x.giftDescription||'Belum diisi'):(x.type||'Belum dikategorikan');let amount=x.type==='Kado'?'—':fmt(x.amount);return '<tr><td><b>'+esc(x.name)+'</b></td><td><span class="tag">'+esc(x.source)+'</span></td><td>'+esc(desc)+'</td><td class="money">'+amount+'</td><td>'+esc(dateFmt(x.createdAt))+'</td><td><button class="mini" onclick="editRow(\'+x.id+'\\')">Edit</button><button class="mini del" onclick="removeRow(\'+x.id+'\\')">Hapus</button></td></tr>'}).join('');
  $('empty').style.display=list.length?'none':'block';
 }
 function syncGiftFields(){const gift=$('giftType').value==='Kado';$('moneyField').style.display=gift?'none':'block';$('giftField').style.display=gift?'block':'none';$('amount').required=!gift;$('giftDescription').required=gift} $('giftType').onchange=syncGiftFields;syncGiftFields();
