@@ -20,10 +20,10 @@ function setup() {
   const ss = SpreadsheetApp.create('Buku Sumbangan — Ardan & Yhola');
   const sheet = ss.getActiveSheet();
   sheet.setName(SHEET_NAME);
-  sheet.appendRow(['ID', 'Nama', 'Jumlah', 'Tamu Dari', 'Dibuat Pada', 'Diperbarui Pada']);
+  sheet.appendRow(['ID', 'Nama', 'Jumlah', 'Tamu Dari', 'Dibuat Pada', 'Diperbarui Pada', 'Jenis Sumbangan', 'Isi Kado']);
   sheet.setFrozenRows(1);
-  sheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#F3EBDD');
-  sheet.setColumnWidths(1, 6, 170);
+  sheet.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#F3EBDD');
+  sheet.setColumnWidths(1, 8, 170);
   PropertiesService.getScriptProperties().setProperty('SPREADSHEET_ID', ss.getId());
   Logger.log('Spreadsheet dibuat: ' + ss.getUrl());
   return ss.getUrl();
@@ -54,33 +54,39 @@ function doGet(e) {
 function sheet_() {
   const id = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
   if (!id) throw new Error('Jalankan setup() terlebih dahulu.');
-  return SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME);
+  const s = SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME);
+  // Tambahkan kolom baru ke spreadsheet aktif tanpa membuat spreadsheet baru.
+  if (s.getLastColumn() < 8) s.getRange(1, 7, 1, 2).setValues([['Jenis Sumbangan', 'Isi Kado']]);
+  return s;
 }
 function readRows_() {
   const s = sheet_(), values = s.getDataRange().getValues();
   return values.slice(1).filter(r => r[0]).map(r => ({
-    id: String(r[0]), name: String(r[1]), amount: Number(r[2]),
+    id: String(r[0]), name: String(r[1]), amount: Number(r[2] || 0),
     source: String(r[3]), createdAt: r[4] ? new Date(r[4]).toISOString() : '',
-    updatedAt: r[5] ? new Date(r[5]).toISOString() : ''
+    updatedAt: r[5] ? new Date(r[5]).toISOString() : '',
+    type: String(r[6] || ''), giftDescription: String(r[7] || '')
   }));
 }
 function addRow_(p) {
   const name = String(p.name || '').trim(), source = String(p.source || '').trim();
-  const amount = Number(p.amount);
-  if (!name || !source || !Number.isFinite(amount) || amount <= 0) throw new Error('Nama, jumlah, dan asal tamu wajib diisi.');
+  const type = String(p.type || 'Amplop').trim(), giftDescription = String(p.giftDescription || '').trim();
+  const isGift = type === 'Kado', amount = isGift ? 0 : Number(p.amount);
+  if (!name || !source || (isGift ? !giftDescription : (!Number.isFinite(amount) || amount <= 0))) throw new Error('Nama, asal tamu, serta jumlah atau isi kado wajib diisi.');
   const id = Utilities.getUuid(), now = new Date();
-  sheet_().appendRow([id, name, amount, source, now, now]);
-  return { id, name, amount, source, createdAt: now.toISOString(), updatedAt: now.toISOString() };
+  sheet_().appendRow([id, name, amount, source, now, now, type, giftDescription]);
+  return { id, name, amount, source, type, giftDescription, createdAt: now.toISOString(), updatedAt: now.toISOString() };
 }
 function updateRow_(p) {
   const s = sheet_(), id = String(p.id || '');
   const name = String(p.name || '').trim(), source = String(p.source || '').trim();
-  const amount = Number(p.amount), values = s.getDataRange().getValues();
-  if (!id || !name || !source || !Number.isFinite(amount) || amount <= 0) throw new Error('Data edit tidak lengkap.');
+  const type = String(p.type || 'Amplop').trim(), giftDescription = String(p.giftDescription || '').trim();
+  const isGift = type === 'Kado', amount = isGift ? 0 : Number(p.amount), values = s.getDataRange().getValues();
+  if (!id || !name || !source || (isGift ? !giftDescription : (!Number.isFinite(amount) || amount <= 0))) throw new Error('Data edit tidak lengkap.');
   for (let i = 1; i < values.length; i++) if (String(values[i][0]) === id) {
     const now = new Date();
-    s.getRange(i + 1, 2, 1, 5).setValues([[name, amount, source, values[i][4], now]]);
-    return { id, name, amount, source, updatedAt: now.toISOString() };
+    s.getRange(i + 1, 2, 1, 7).setValues([[name, amount, source, values[i][4], now, type, giftDescription]]);
+    return { id, name, amount, source, type, giftDescription, updatedAt: now.toISOString() };
   }
   throw new Error('Catatan tidak ditemukan.');
 }
